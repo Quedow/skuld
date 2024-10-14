@@ -1,8 +1,10 @@
 class Task {
-  final String title;
-  final String description;
-  final DateTime dueDateTime;
-  final String color;
+  final int id;
+  String title;
+  String description;
+  DateTime dueDateTime;
+  String color;
+  bool isDone = false;
 
-  Task({required this.title, required this.description, required this.dueDateTime, required this.color});
+  Task({required this.id, required this.title, required this.description, required this.dueDateTime, required this.color});
 }

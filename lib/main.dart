@@ -1,9 +1,16 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:skuld/provider/quest_provider.dart';
 import 'package:skuld/screens/home_screen.dart';
 
 void main() {
-  runApp(MyGameApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => QuestProvider(),
+      child: MyGameApp(),
+    ),
+  );
 }
 
 class MyGameApp extends StatelessWidget {

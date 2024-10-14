@@ -1,8 +1,9 @@
 class Habit {
-  final String title;
-  final String description;
-  final bool isGood;
-  final String color;
+  final int id;
+  String title;
+  String description;
+  bool isGood;
+  String color;
 
-  Habit({required this.title, required this.description, required this.isGood, required this.color});
+  Habit({required this.id, required this.title, required this.description, required this.isGood, required this.color});
 }

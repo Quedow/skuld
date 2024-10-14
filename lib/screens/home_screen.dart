@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:skuld/provider/quest_provider.dart';
 import 'package:skuld/screens/form_screen.dart';
 import 'package:skuld/screens/game_screen.dart';
+import 'package:skuld/screens/habits_screen.dart';
 import 'package:skuld/screens/tasks_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,6 +15,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int currentScreenIndex = 0;
+  late QuestProvider _questProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _questProvider = Provider.of<QuestProvider>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: [
           GameScreen(),
-          FormScreen(),
-          TasksScreen(),
+          TasksScreen(questProvider: _questProvider),
+          FormScreen(questProvider: _questProvider),
+          HabitsScreen(questProvider: _questProvider),
         ].elementAt(currentScreenIndex)
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -37,8 +48,9 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         items: [
           BottomNavigationBarItem(label: 'Player', icon: const Icon(Icons.gamepad_rounded)),
-          BottomNavigationBarItem(label: 'Add', icon: const Icon(Icons.add_rounded)),
           BottomNavigationBarItem(label: 'Tasks', icon: const Icon(Icons.menu_rounded)),
+          BottomNavigationBarItem(label: 'Add', icon: const Icon(Icons.add_rounded)),
+          BottomNavigationBarItem(label: 'Habits', icon: const Icon(Icons.menu_rounded)),
         ],
       ),
     );
