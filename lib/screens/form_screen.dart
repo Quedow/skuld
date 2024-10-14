@@ -3,68 +3,68 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/task.dart';
-import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/provider/database_service.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/utils/rules.dart';
 
 class FormScreen extends StatefulWidget {
-  final QuestProvider questProvider;
   final Map<QuestType, int>? questTypeAndId;
 
-  const FormScreen({super.key, required this.questProvider, this.questTypeAndId});
+  const FormScreen({super.key, this.questTypeAndId});
 
   @override
   State<FormScreen> createState() => _FormScreenState();
 }
 
 class _FormScreenState extends State<FormScreen> {
+  final DatabaseService _db = DatabaseService();
+  
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final QuestProvider _questProvider;
-  int _existingIndex = -1;
+  late final int? _idToUpdate;
+  bool _isEditMode = false;
 
-  QuestType _questType = QuestType.task;
-
+  late QuestType _questType;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   DateTime _dateController = DateTime.now();
   TimeOfDay _timeController = TimeOfDay.now();
   String _colorController = '#f44336';
   bool _isGoodController = true;
-  bool _isEditMode = false;
 
   @override
   void initState() {
     super.initState();
-    _questProvider = widget.questProvider;
+    _questType =  widget.questTypeAndId?.entries.first.key ?? QuestType.task;
+    _idToUpdate = widget.questTypeAndId?.entries.first.value;
+    _tryLoadQuest();
+  }
 
-    QuestType? existingQuestType = widget.questTypeAndId?.entries.first.key;
-    int? existingId = widget.questTypeAndId?.entries.first.value;
-
-    print(existingId);
-
-    if (existingId != null) {
+  Future<void> _tryLoadQuest() async {
+    if (_idToUpdate != null) {
       _isEditMode = true;
-      
-      if (existingQuestType == QuestType.task) {
-        final Task existingTask = _questProvider.tasks.firstWhere((task) => task.id == existingId);
-        _existingIndex = _questProvider.tasks.indexOf(existingTask);
 
-        _questType = QuestType.task;
+      if (_questType == QuestType.task) {
+        final Task? taskToUpdate = await _db.getTask(_idToUpdate);
 
-        _titleController.text = existingTask.title;
-        _descriptionController.text = existingTask.description;
-        _dateController = existingTask.dueDateTime;
-        _timeController = TimeOfDay.fromDateTime(existingTask.dueDateTime);
-        _colorController = existingTask.color;
-      } else if (existingQuestType == QuestType.habit) {
-        final existingHabit = widget.questProvider.habits.firstWhere((habit) => habit.id == existingId);
-        _existingIndex = _questProvider.habits.indexOf(existingHabit);
-        
-        _questType = QuestType.habit;
+        if (taskToUpdate == null) { return; }
 
-        _titleController.text = existingHabit.title;
-        _descriptionController.text = existingHabit.description;
-        _isGoodController = existingHabit.isGood;
+        setState(() {
+          _titleController.text = taskToUpdate.title;
+          _descriptionController.text = taskToUpdate.description;
+          _dateController = taskToUpdate.dueDateTime;
+          _timeController = TimeOfDay.fromDateTime(taskToUpdate.dueDateTime);
+          _colorController = taskToUpdate.color;
+        });
+      } else if (_questType == QuestType.habit) {
+        final Habit? habitToUpdate = await _db.getHabit(_idToUpdate);
+
+        if (habitToUpdate == null) { return; }
+
+        setState(() {
+          _titleController.text = habitToUpdate.title;
+          _descriptionController.text = habitToUpdate.description;
+          _isGoodController = habitToUpdate.isGood;
+        });
       }
     }
   }
@@ -79,31 +79,23 @@ class _FormScreenState extends State<FormScreen> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       if (_questType == QuestType.task) {
-        final dueDateTime = DateTime(
-          _dateController.year,
-          _dateController.month,
-          _dateController.day,
-          _timeController.hour,
-          _timeController.minute,
-        );
+        final DateTime dueDateTime = DateTime(_dateController.year, _dateController.month, _dateController.day, _timeController.hour, _timeController.minute);
 
-        Task newTask = Task(
-          id: _questProvider.tasks.length + 1,
-          title: _titleController.text,
-          description: _descriptionController.text,
-          dueDateTime: dueDateTime,
-          color: _colorController,
+        Task task = Task(
+          _titleController.text,
+          _descriptionController.text,
+          dueDateTime,
+          _colorController,
         );
-        _questProvider.addOrUpdateTask(newTask, _existingIndex);
+        _db.insertOrUpdateTask(_idToUpdate, task);
       } else {
-        Habit newHabit = Habit(
-          id: _questProvider.habits.length + 1,
-          title: _titleController.text,
-          description: _descriptionController.text,
-          isGood: _isGoodController,
-          color: _isGoodController ? '#4caf50' : '#f44336',
+        Habit habit = Habit(
+          _titleController.text,
+          _descriptionController.text,
+          _isGoodController,
+          _isGoodController ? '#4caf50' : '#f44336',
         );
-        _questProvider.addOrUpdateHabit(newHabit, _existingIndex);
+        _db.insertOrUpdateHabit(habit);
       }
       _formKey.currentState!.reset();
       if (_isEditMode) { Navigator.pop(context, true); }
@@ -128,9 +120,9 @@ class _FormScreenState extends State<FormScreen> {
                     _textField(_titleController, 'Title', Rules.isNotEmpty),
                     _textField(_descriptionController, 'Description', Rules.free),
                     ..._questForm(),
-                    ElevatedButton(onPressed: _submitForm, child: Text('Save')),
+                    ElevatedButton(onPressed: _submitForm, child: const Text('Save')),
                     if (_isEditMode)
-                      ElevatedButton(onPressed: _deleteQuest, child: Text('Delete')),
+                      ElevatedButton(onPressed: _deleteQuest, child: const Text('Delete')),
                   ],
                 ),
               ),
@@ -145,8 +137,8 @@ class _FormScreenState extends State<FormScreen> {
     return SegmentedButton<QuestType>(
       selected: {_questType},
       segments: [
-        ButtonSegment<QuestType>(label: Text('Task'), value: QuestType.task),
-        ButtonSegment<QuestType>(label: Text('Habit'), value: QuestType.habit),
+        const ButtonSegment<QuestType>(label: Text('Task'), value: QuestType.task),
+        const ButtonSegment<QuestType>(label: Text('Habit'), value: QuestType.habit),
       ],
       onSelectionChanged: (Set<QuestType> questTypes) {
         setState(() {
@@ -181,10 +173,10 @@ class _FormScreenState extends State<FormScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Due date'),
+        const Text('Due date'),
         Text(Functions.getDate(_dateController)),
         ElevatedButton(
-          child: Text('Pick Date'),
+          child: const Text('Pick Date'),
           onPressed: () => _selectDate(context),
         ),
       ],
@@ -195,10 +187,10 @@ class _FormScreenState extends State<FormScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Due time'),
+        const Text('Due time'),
         Text(_timeController.format(context)),
         ElevatedButton(
-          child: Text('Pick Time'),
+          child: const Text('Pick Time'),
           onPressed: () => _selectTime(context),
         ),
       ],
@@ -283,10 +275,10 @@ class _FormScreenState extends State<FormScreen> {
   }
 
   void _deleteQuest() {
-    if (_questType == QuestType.task && _existingIndex != -1) {
-      _questProvider.removeTask(_existingIndex);
-    } else if (_questType == QuestType.habit && _existingIndex != -1) {
-      widget.questProvider.removeHabit(_existingIndex);
+    if (_questType == QuestType.task && _idToUpdate != null) {
+      _db.clearTask(_idToUpdate);
+    } else if (_questType == QuestType.habit && _idToUpdate != null) {
+      _db.clearHabit(_idToUpdate);
     }
     Navigator.pop(context);
   }

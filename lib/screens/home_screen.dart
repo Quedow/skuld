@@ -14,8 +14,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int currentScreenIndex = 0;
   late QuestProvider _questProvider;
+  int currentScreenIndex = 0;
 
   @override
   void initState() {
@@ -29,10 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: [
-          GameScreen(),
-          TasksScreen(questProvider: _questProvider),
-          FormScreen(questProvider: _questProvider),
-          HabitsScreen(questProvider: _questProvider),
+          const GameScreen(),
+          const TasksScreen(),
+          const FormScreen(),
+          const HabitsScreen(),
         ].elementAt(currentScreenIndex)
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -47,10 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         items: [
-          BottomNavigationBarItem(label: 'Player', icon: const Icon(Icons.gamepad_rounded)),
-          BottomNavigationBarItem(label: 'Tasks', icon: const Icon(Icons.menu_rounded)),
-          BottomNavigationBarItem(label: 'Add', icon: const Icon(Icons.add_rounded)),
-          BottomNavigationBarItem(label: 'Habits', icon: const Icon(Icons.menu_rounded)),
+          const BottomNavigationBarItem(label: 'Player', icon: Icon(Icons.gamepad_rounded)),
+          const BottomNavigationBarItem(label: 'Tasks', icon: Icon(Icons.menu_rounded)),
+          const BottomNavigationBarItem(label: 'Add', icon: Icon(Icons.add_rounded)),
+          const BottomNavigationBarItem(label: 'Habits', icon: Icon(Icons.menu_rounded)),
         ],
       ),
     );

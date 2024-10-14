@@ -1,9 +1,14 @@
+import 'package:isar/isar.dart';
+
+part 'habit.g.dart';
+
+@collection
 class Habit {
-  final int id;
+  Id id = Isar.autoIncrement;
   String title;
   String description;
   bool isGood;
   String color;
 
-  Habit({required this.id, required this.title, required this.description, required this.isGood, required this.color});
+  Habit(this.title, this.description, this.isGood, this.color);
 }
