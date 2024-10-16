@@ -33,20 +33,9 @@ class DatabaseService {
     return await isar.habits.get(id);
   }
 
-  Future<void> insertOrUpdateTask(int? id, Task task) async {
+  Future<void> insertOrUpdateTask(Task task) async {
     await isar.writeTxn(() async {
-      if (id != null) {
-        final Task? taskToUpdate = await isar.tasks.filter().idEqualTo(id).findFirst();
-        if (taskToUpdate != null) {
-          taskToUpdate.title = task.title;
-          taskToUpdate.description = task.description;
-          taskToUpdate.dueDateTime = task.dueDateTime;
-          taskToUpdate.color = task.color;
-          await isar.tasks.put(taskToUpdate);
-        }
-      } else {
-        await isar.tasks.put(task);
-      }
+      await isar.tasks.put(task);
     });
   }
 

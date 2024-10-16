@@ -4,13 +4,15 @@ import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/provider/database_service.dart';
+import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/utils/rules.dart';
+import 'package:skuld/utils/styles.dart';
 
 class FormScreen extends StatefulWidget {
-  final Map<QuestType, int>? questTypeAndId;
+  final Map<QuestType, dynamic>? typeAndQuest;
 
-  const FormScreen({super.key, this.questTypeAndId});
+  const FormScreen({super.key, this.typeAndQuest});
 
   @override
   State<FormScreen> createState() => _FormScreenState();
@@ -20,52 +22,49 @@ class _FormScreenState extends State<FormScreen> {
   final DatabaseService _db = DatabaseService();
   
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final int? _idToUpdate;
+  late dynamic _quest;
   bool _isEditMode = false;
 
-  late QuestType _questType;
+  QuestType _questType = QuestType.task;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   DateTime _dateController = DateTime.now();
   TimeOfDay _timeController = TimeOfDay.now();
-  String _colorController = '#f44336';
+  String _colorController = Styles.redColor;
   bool _isGoodController = true;
 
   @override
   void initState() {
     super.initState();
-    _questType =  widget.questTypeAndId?.entries.first.key ?? QuestType.task;
-    _idToUpdate = widget.questTypeAndId?.entries.first.value;
+    if (widget.typeAndQuest == null) { return; }
+
+    _questType =  widget.typeAndQuest!.entries.first.key;
+    _quest = (_questType == QuestType.task)
+      ? Functions.tryCast<Task>(widget.typeAndQuest?.entries.first.value)
+      : Functions.tryCast<Habit>(widget.typeAndQuest?.entries.first.value);
+
+    if (_quest == null) { return; }
+
     _tryLoadQuest();
   }
 
   Future<void> _tryLoadQuest() async {
-    if (_idToUpdate != null) {
-      _isEditMode = true;
+    _isEditMode = true;
 
-      if (_questType == QuestType.task) {
-        final Task? taskToUpdate = await _db.getTask(_idToUpdate);
-
-        if (taskToUpdate == null) { return; }
-
-        setState(() {
-          _titleController.text = taskToUpdate.title;
-          _descriptionController.text = taskToUpdate.description;
-          _dateController = taskToUpdate.dueDateTime;
-          _timeController = TimeOfDay.fromDateTime(taskToUpdate.dueDateTime);
-          _colorController = taskToUpdate.color;
-        });
-      } else if (_questType == QuestType.habit) {
-        final Habit? habitToUpdate = await _db.getHabit(_idToUpdate);
-
-        if (habitToUpdate == null) { return; }
-
-        setState(() {
-          _titleController.text = habitToUpdate.title;
-          _descriptionController.text = habitToUpdate.description;
-          _isGoodController = habitToUpdate.isGood;
-        });
-      }
+    if (_questType == QuestType.task) {
+      setState(() {
+        _titleController.text = _quest.title;
+        _descriptionController.text = _quest.description;
+        _dateController = _quest.dueDateTime;
+        _timeController = TimeOfDay.fromDateTime(_quest.dueDateTime);
+        _colorController = _quest.color;
+      });
+    } else if (_questType == QuestType.habit) {
+      setState(() {
+        _titleController.text = _quest.title;
+        _descriptionController.text = _quest.description;
+        _isGoodController = _quest.isGood;
+      });
     }
   }
 
@@ -76,41 +75,76 @@ class _FormScreenState extends State<FormScreen> {
     super.dispose();
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      if (_questType == QuestType.task) {
-        final DateTime dueDateTime = DateTime(_dateController.year, _dateController.month, _dateController.day, _timeController.hour, _timeController.minute);
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) { return; }
 
-        Task task = Task(
-          _titleController.text,
-          _descriptionController.text,
-          dueDateTime,
-          _colorController,
-        );
-        _db.insertOrUpdateTask(_idToUpdate, task);
-      } else {
-        Habit habit = Habit(
-          _titleController.text,
-          _descriptionController.text,
-          _isGoodController,
-          _isGoodController ? '#4caf50' : '#f44336',
-        );
-        _db.insertOrUpdateHabit(habit);
-      }
-      _formKey.currentState!.reset();
-      if (_isEditMode) { Navigator.pop(context, true); }
+    switch (_questType) {
+      case QuestType.task:
+        _isEditMode ? await _updateTask() : await _addTask();
+        break;
+      case QuestType.habit:
+        _isEditMode ? await _updateHabit() : await _addHabit();
+        break;
+      case QuestType.routine:
+        break;
     }
+    _formKey.currentState!.reset();
+    if (_isEditMode && mounted) { Navigator.pop(context, true); }
   }
+
+  Future<void> _addTask() async {
+    final DateTime dueDateTime = DateTime(_dateController.year, _dateController.month, _dateController.day, _timeController.hour, _timeController.minute);
+
+    await _db.insertOrUpdateTask(Task(
+      _titleController.text,
+      _descriptionController.text,
+      dueDateTime,
+      _colorController,
+    ),);
+  }
+
+  Future<void> _updateTask() async {
+    final DateTime dueDateTime = DateTime(_dateController.year, _dateController.month, _dateController.day, _timeController.hour, _timeController.minute);
+             
+    _quest.title = _titleController.text;
+    _quest.description = _descriptionController.text;
+    _quest.dueDateTime = dueDateTime;
+    _quest.color = _colorController;
+    
+    await _db.insertOrUpdateTask(_quest);
+  }
+
+  Future<void> _addHabit() async {
+    await _db.insertOrUpdateHabit(Habit(
+      _titleController.text,
+      _descriptionController.text,
+      _isGoodController,
+      _isGoodController ? Styles.greenColor : Styles.redColor,
+    ),);
+  }
+
+  Future<void> _updateHabit() async {
+      _quest.title = _titleController.text;
+      _quest.description = _descriptionController.text;
+      _quest.isGood = _isGoodController;
+      _quest.color = _isGoodController ? Styles.greenColor : Styles.redColor;
+      await _db.insertOrUpdateHabit(_quest);
+    }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
+      appBar: AppBar(
+        title: Text(Texts.textTitleForm(_isEditMode, _questType)),
+        actions: _isEditMode ? [
+          IconButton(onPressed: _deleteQuest, icon: const Icon(Icons.delete_rounded)),
+        ] : null,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+        child: SingleChildScrollView(
           child: Column(
             children: [
-              Text(_isEditMode ? 'Edit ${_questType == QuestType.task ? "Task" : "Habit"}' : 'Create ${_questType == QuestType.task ? "Task" : "Habit"}'),
               if (!_isEditMode)
                 _segmentedButton(),
               Form(
@@ -120,9 +154,10 @@ class _FormScreenState extends State<FormScreen> {
                     _textField(_titleController, 'Title', Rules.isNotEmpty),
                     _textField(_descriptionController, 'Description', Rules.free),
                     ..._questForm(),
-                    ElevatedButton(onPressed: _submitForm, child: const Text('Save')),
-                    if (_isEditMode)
-                      ElevatedButton(onPressed: _deleteQuest, child: const Text('Delete')),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: ElevatedButton(onPressed: _submitForm, child: const Text('Save')),
+                    ),
                   ],
                 ),
               ),
@@ -133,34 +168,42 @@ class _FormScreenState extends State<FormScreen> {
     );
   }
 
-  SegmentedButton _segmentedButton() {
-    return SegmentedButton<QuestType>(
-      selected: {_questType},
-      segments: [
-        const ButtonSegment<QuestType>(label: Text('Task'), value: QuestType.task),
-        const ButtonSegment<QuestType>(label: Text('Habit'), value: QuestType.habit),
-      ],
-      onSelectionChanged: (Set<QuestType> questTypes) {
-        setState(() {
-          _questType = questTypes.first;
-        });
-      }
+  Padding _segmentedButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: SegmentedButton<QuestType>(
+        selected: {_questType},
+        segments: [
+          const ButtonSegment<QuestType>(label: Text('Task'), value: QuestType.task),
+          const ButtonSegment<QuestType>(label: Text('Habit'), value: QuestType.habit),
+        ],
+        onSelectionChanged: (Set<QuestType> questTypes) {
+          setState(() => _questType = questTypes.first);
+        },
+      ),
     );
   }
 
-  TextFormField _textField(TextEditingController controller, String label, String? Function(String?) rules) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(labelText: label),
-      validator: rules,
+  Padding _textField(TextEditingController controller, String label, String? Function(String?) rules) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          isDense: true,
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(Styles.borderRadius)),
+        ),
+        validator: rules,
+      ),
     );
   }
 
   List<Widget> _questForm() {
     if (_questType == QuestType.task) {
       return [
-        _dateSelector(),
-        _timeSelector(),
+        _selector(Icons.calendar_today_rounded, 'Due Date', Functions.getDate(_dateController), () => _selectDate(context)),
+        _selector(Icons.access_time_rounded, 'Time', _timeController.format(context), () => _selectTime(context)),
         _colorSelector(),
       ];
     } else if (_questType == QuestType.habit) {
@@ -169,59 +212,64 @@ class _FormScreenState extends State<FormScreen> {
     return [];
   }
 
-  Row _dateSelector() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text('Due date'),
-        Text(Functions.getDate(_dateController)),
-        ElevatedButton(
-          child: const Text('Pick Date'),
-          onPressed: () => _selectDate(context),
+  Padding _selector(IconData icon, String label, String data, void Function()? onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black, width: 1),  // Black border
+          borderRadius: BorderRadius.circular(Styles.borderRadius),
         ),
-      ],
-    );
-  }
-
-  Row _timeSelector() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text('Due time'),
-        Text(_timeController.format(context)),
-        ElevatedButton(
-          child: const Text('Pick Time'),
-          onPressed: () => _selectTime(context),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label),
+            Text(data),
+            IconButton(icon: Icon(icon), onPressed: onPressed),
+          ],
         ),
-      ],
-    );
-  }
-
-  ElevatedButton _colorSelector() {
-    return ElevatedButton(
-      onPressed: () => _selectColor(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Select Color'),
-          CircleAvatar(backgroundColor: Color(int.parse(_colorController.replaceFirst('#', '0xff'))), radius: 10),
-        ],
       ),
     );
   }
 
-  SegmentedButton _habitTypeSwitch() {
-    return SegmentedButton<bool>(
-      selected: {_isGoodController},
-      segments: [
-        ButtonSegment<bool>(label: Text('Good Habit'), value: true),
-        ButtonSegment<bool>(label: Text('Bad Habit'), value: false),
-      ],
-      onSelectionChanged: (Set<bool> questTypes) {
-        setState(() {
-          _isGoodController = questTypes.first;
-        });
-      }
+  Padding _colorSelector() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        padding: const EdgeInsets.only(left: 10),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black, width: 1),  // Black border
+          borderRadius: BorderRadius.circular(Styles.borderRadius),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Select Color'),
+            TextButton(
+              style: const ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
+              child: CircleAvatar(backgroundColor: Color(int.parse(_colorController.replaceFirst('#', '0xff'))), radius: 12),
+              onPressed: () => _selectColor(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding _habitTypeSwitch() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: SegmentedButton<bool>(
+        selected: {_isGoodController},
+        segments: [
+          const ButtonSegment<bool>(label: Text('Good Habit'), value: true),
+          const ButtonSegment<bool>(label: Text('Bad Habit'), value: false),
+        ],
+        onSelectionChanged: (Set<bool> questTypes) {
+          setState(() => _isGoodController = questTypes.first);
+        },
+      ),
     );
   }
 
@@ -234,9 +282,7 @@ class _FormScreenState extends State<FormScreen> {
     );
 
     if (dueDate != null && dueDate != _dateController) {
-      setState(() {
-        _dateController = dueDate;
-      });
+      setState(() => _dateController = dueDate);
     }
   }
 
@@ -246,9 +292,7 @@ class _FormScreenState extends State<FormScreen> {
       initialTime: TimeOfDay.now(),
     );
     if (dueTime != null && dueTime != _timeController) {
-      setState(() {
-        _timeController = dueTime;
-      });
+      setState(() => _timeController = dueTime);
     }
   }
 
@@ -258,7 +302,7 @@ class _FormScreenState extends State<FormScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: BlockPicker(
-            pickerColor: Color(0xfff44336),
+            pickerColor: const Color(0xfff44336),
             onColorChanged: (color) {
               Navigator.of(context).pop(color);
             },
@@ -268,18 +312,19 @@ class _FormScreenState extends State<FormScreen> {
     );
 
     if (color != null) {
-      setState(() {
-        _colorController = '#${color.value.toRadixString(16).padLeft(8, '0')}';
-      });
+      setState(() => _colorController = '#${color.value.toRadixString(16).padLeft(8, '0')}');
     }
   }
 
-  void _deleteQuest() {
-    if (_questType == QuestType.task && _idToUpdate != null) {
-      _db.clearTask(_idToUpdate);
-    } else if (_questType == QuestType.habit && _idToUpdate != null) {
-      _db.clearHabit(_idToUpdate);
+  Future<void> _deleteQuest() async {
+    if (_questType == QuestType.task && _quest != null) {
+      await _db.clearTask(_quest.id);
+    } else if (_questType == QuestType.habit && _quest != null) {
+      await _db.clearHabit(_quest.id);
     }
-    Navigator.pop(context);
+
+    if(mounted) {
+      Navigator.pop(context, true);
+    }
   }
 }

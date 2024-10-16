@@ -13,4 +13,6 @@ abstract class Functions {
   static String getTime(DateTime date) {
     return DateFormat('HH:mm').format(date);
   }
+
+  static T? tryCast<T>(dynamic x) => x is T ? x : null;
 }

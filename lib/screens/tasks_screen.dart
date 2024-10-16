@@ -3,6 +3,7 @@ import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/provider/database_service.dart';
 import 'package:skuld/screens/form_screen.dart';
+import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
 
 class TasksScreen extends StatefulWidget {
@@ -33,7 +34,7 @@ class _TasksScreenState extends State<TasksScreen> {
         }
 
         if (snapshot.hasError) {
-          return const Center(child: Text('Error when loading tasks'));
+          return Center(child: Text(Texts.errorLoadingTasks));
         }
 
         final List<Task> tasks = snapshot.data ?? [];
@@ -49,19 +50,19 @@ class _TasksScreenState extends State<TasksScreen> {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: GestureDetector(
-                onTap: () => _navigateToFormScreen(task.id),
+                onTap: () => _navigateToFormScreen(task),
                 child: ListTile(
+                  
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   tileColor: const Color(0xFFE1E1E1),
                   leading: Checkbox(
+                    side: BorderSide(color: Functions.getColor(task.color), width: 2),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                     value: task.isDone,
                     onChanged: (value) async {
                       final bool state = value ?? task.isDone;
                       await _db.completeTask(task.id, state);
-                      setState(() {
-                        task.isDone = state;
-                      });
+                      setState(() => task.isDone = state);
                     },
                   ),
                   title: Text(task.title, style: TextStyle(color: !dueDateExpired ? Colors.black : Colors.red)),
@@ -85,14 +86,13 @@ class _TasksScreenState extends State<TasksScreen> {
     );
   }
 
-  Future<void> _navigateToFormScreen(int id) async {
-    final result = await Navigator.push(
+  Future<void> _navigateToFormScreen(Task task) async {
+    bool result = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => FormScreen(questTypeAndId: {QuestType.task: id}),
-      ),
+      MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: {QuestType.task: task})),
     );
-    if (result == true) {
+
+    if (result) {
       setState(() {
         _tasks = _db.getTasks();
       });
