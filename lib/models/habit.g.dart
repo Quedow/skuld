@@ -17,10 +17,10 @@ const HabitSchema = CollectionSchema(
   name: r'Habit',
   id: 3896650575830519340,
   properties: {
-    r'color': PropertySchema(
+    r'counter': PropertySchema(
       id: 0,
-      name: r'color',
-      type: IsarType.string,
+      name: r'counter',
+      type: IsarType.long,
     ),
     r'description': PropertySchema(
       id: 1,
@@ -58,7 +58,6 @@ int _habitEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.color.length * 3;
   bytesCount += 3 + object.description.length * 3;
   bytesCount += 3 + object.title.length * 3;
   return bytesCount;
@@ -70,7 +69,7 @@ void _habitSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.color);
+  writer.writeLong(offsets[0], object.counter);
   writer.writeString(offsets[1], object.description);
   writer.writeBool(offsets[2], object.isGood);
   writer.writeString(offsets[3], object.title);
@@ -86,8 +85,8 @@ Habit _habitDeserialize(
     reader.readString(offsets[3]),
     reader.readString(offsets[1]),
     reader.readBool(offsets[2]),
-    reader.readString(offsets[0]),
   );
+  object.counter = reader.readLong(offsets[0]);
   object.id = id;
   return object;
 }
@@ -100,7 +99,7 @@ P _habitDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
@@ -200,130 +199,54 @@ extension HabitQueryWhere on QueryBuilder<Habit, Habit, QWhereClause> {
 }
 
 extension HabitQueryFilter on QueryBuilder<Habit, Habit, QFilterCondition> {
-  QueryBuilder<Habit, Habit, QAfterFilterCondition> colorEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> counterEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'color',
+        property: r'counter',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Habit, Habit, QAfterFilterCondition> colorGreaterThan(
-    String value, {
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> counterGreaterThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'color',
+        property: r'counter',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Habit, Habit, QAfterFilterCondition> colorLessThan(
-    String value, {
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> counterLessThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'color',
+        property: r'counter',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Habit, Habit, QAfterFilterCondition> colorBetween(
-    String lower,
-    String upper, {
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> counterBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'color',
+        property: r'counter',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Habit, Habit, QAfterFilterCondition> colorStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'color',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Habit, Habit, QAfterFilterCondition> colorEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'color',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Habit, Habit, QAfterFilterCondition> colorContains(String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'color',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Habit, Habit, QAfterFilterCondition> colorMatches(String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'color',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Habit, Habit, QAfterFilterCondition> colorIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'color',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Habit, Habit, QAfterFilterCondition> colorIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'color',
-        value: '',
       ));
     });
   }
@@ -653,15 +576,15 @@ extension HabitQueryObject on QueryBuilder<Habit, Habit, QFilterCondition> {}
 extension HabitQueryLinks on QueryBuilder<Habit, Habit, QFilterCondition> {}
 
 extension HabitQuerySortBy on QueryBuilder<Habit, Habit, QSortBy> {
-  QueryBuilder<Habit, Habit, QAfterSortBy> sortByColor() {
+  QueryBuilder<Habit, Habit, QAfterSortBy> sortByCounter() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.asc);
+      return query.addSortBy(r'counter', Sort.asc);
     });
   }
 
-  QueryBuilder<Habit, Habit, QAfterSortBy> sortByColorDesc() {
+  QueryBuilder<Habit, Habit, QAfterSortBy> sortByCounterDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.desc);
+      return query.addSortBy(r'counter', Sort.desc);
     });
   }
 
@@ -703,15 +626,15 @@ extension HabitQuerySortBy on QueryBuilder<Habit, Habit, QSortBy> {
 }
 
 extension HabitQuerySortThenBy on QueryBuilder<Habit, Habit, QSortThenBy> {
-  QueryBuilder<Habit, Habit, QAfterSortBy> thenByColor() {
+  QueryBuilder<Habit, Habit, QAfterSortBy> thenByCounter() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.asc);
+      return query.addSortBy(r'counter', Sort.asc);
     });
   }
 
-  QueryBuilder<Habit, Habit, QAfterSortBy> thenByColorDesc() {
+  QueryBuilder<Habit, Habit, QAfterSortBy> thenByCounterDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.desc);
+      return query.addSortBy(r'counter', Sort.desc);
     });
   }
 
@@ -765,10 +688,9 @@ extension HabitQuerySortThenBy on QueryBuilder<Habit, Habit, QSortThenBy> {
 }
 
 extension HabitQueryWhereDistinct on QueryBuilder<Habit, Habit, QDistinct> {
-  QueryBuilder<Habit, Habit, QDistinct> distinctByColor(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Habit, Habit, QDistinct> distinctByCounter() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'color', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'counter');
     });
   }
 
@@ -800,9 +722,9 @@ extension HabitQueryProperty on QueryBuilder<Habit, Habit, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Habit, String, QQueryOperations> colorProperty() {
+  QueryBuilder<Habit, int, QQueryOperations> counterProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'color');
+      return query.addPropertyName(r'counter');
     });
   }
 

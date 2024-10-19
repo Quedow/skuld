@@ -7,8 +7,16 @@ abstract class Texts {
       : 'Create ${questType == QuestType.task ? "Task" : "Habit"}';
   }
 
+  static String textTasksTitle = 'TASKS';
+  static String textDoneTasksBtn = 'DONE TASKS';
+  static String textNoTask = '🤔 No task for now...';
+
+  static String textHabitTitle = 'HABITS';
+  static String textNoHabit = '🤔 No task for now...';
+
   // Errors
   static String errorLoadingTasks = 'Error when loading tasks';
+  static String errorLoadingHabits = 'Error when loading habits';
 
   // Rules
   static String errorRequiredRule = 'This filed cannot be empty';

@@ -17,25 +17,25 @@ const TaskSchema = CollectionSchema(
   name: r'Task',
   id: 2998003626758701373,
   properties: {
-    r'color': PropertySchema(
-      id: 0,
-      name: r'color',
-      type: IsarType.string,
-    ),
     r'description': PropertySchema(
-      id: 1,
+      id: 0,
       name: r'description',
       type: IsarType.string,
     ),
     r'dueDateTime': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'dueDateTime',
       type: IsarType.dateTime,
     ),
     r'isDone': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'isDone',
       type: IsarType.bool,
+    ),
+    r'priority': PropertySchema(
+      id: 3,
+      name: r'priority',
+      type: IsarType.long,
     ),
     r'title': PropertySchema(
       id: 4,
@@ -77,7 +77,6 @@ int _taskEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.color.length * 3;
   bytesCount += 3 + object.description.length * 3;
   bytesCount += 3 + object.title.length * 3;
   return bytesCount;
@@ -89,10 +88,10 @@ void _taskSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.color);
-  writer.writeString(offsets[1], object.description);
-  writer.writeDateTime(offsets[2], object.dueDateTime);
-  writer.writeBool(offsets[3], object.isDone);
+  writer.writeString(offsets[0], object.description);
+  writer.writeDateTime(offsets[1], object.dueDateTime);
+  writer.writeBool(offsets[2], object.isDone);
+  writer.writeLong(offsets[3], object.priority);
   writer.writeString(offsets[4], object.title);
 }
 
@@ -104,12 +103,12 @@ Task _taskDeserialize(
 ) {
   final object = Task(
     reader.readString(offsets[4]),
-    reader.readString(offsets[1]),
-    reader.readDateTime(offsets[2]),
     reader.readString(offsets[0]),
+    reader.readDateTime(offsets[1]),
+    reader.readLong(offsets[3]),
   );
   object.id = id;
-  object.isDone = reader.readBool(offsets[3]);
+  object.isDone = reader.readBool(offsets[2]);
   return object;
 }
 
@@ -123,11 +122,11 @@ P _taskDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
-    case 2:
       return (reader.readDateTime(offset)) as P;
-    case 3:
+    case 2:
       return (reader.readBool(offset)) as P;
+    case 3:
+      return (reader.readLong(offset)) as P;
     case 4:
       return (reader.readString(offset)) as P;
     default:
@@ -321,134 +320,6 @@ extension TaskQueryWhere on QueryBuilder<Task, Task, QWhereClause> {
 }
 
 extension TaskQueryFilter on QueryBuilder<Task, Task, QFilterCondition> {
-  QueryBuilder<Task, Task, QAfterFilterCondition> colorEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'color',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterFilterCondition> colorGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'color',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterFilterCondition> colorLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'color',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterFilterCondition> colorBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'color',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterFilterCondition> colorStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'color',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterFilterCondition> colorEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'color',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterFilterCondition> colorContains(String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'color',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterFilterCondition> colorMatches(String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'color',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterFilterCondition> colorIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'color',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterFilterCondition> colorIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'color',
-        value: '',
-      ));
-    });
-  }
-
   QueryBuilder<Task, Task, QAfterFilterCondition> descriptionEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -693,6 +564,58 @@ extension TaskQueryFilter on QueryBuilder<Task, Task, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterFilterCondition> priorityEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'priority',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> priorityGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'priority',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> priorityLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'priority',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterFilterCondition> priorityBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'priority',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterFilterCondition> titleEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -827,18 +750,6 @@ extension TaskQueryObject on QueryBuilder<Task, Task, QFilterCondition> {}
 extension TaskQueryLinks on QueryBuilder<Task, Task, QFilterCondition> {}
 
 extension TaskQuerySortBy on QueryBuilder<Task, Task, QSortBy> {
-  QueryBuilder<Task, Task, QAfterSortBy> sortByColor() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterSortBy> sortByColorDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.desc);
-    });
-  }
-
   QueryBuilder<Task, Task, QAfterSortBy> sortByDescription() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.asc);
@@ -875,6 +786,18 @@ extension TaskQuerySortBy on QueryBuilder<Task, Task, QSortBy> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterSortBy> sortByPriority() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'priority', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> sortByPriorityDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'priority', Sort.desc);
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterSortBy> sortByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -889,18 +812,6 @@ extension TaskQuerySortBy on QueryBuilder<Task, Task, QSortBy> {
 }
 
 extension TaskQuerySortThenBy on QueryBuilder<Task, Task, QSortThenBy> {
-  QueryBuilder<Task, Task, QAfterSortBy> thenByColor() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Task, Task, QAfterSortBy> thenByColorDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.desc);
-    });
-  }
-
   QueryBuilder<Task, Task, QAfterSortBy> thenByDescription() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.asc);
@@ -949,6 +860,18 @@ extension TaskQuerySortThenBy on QueryBuilder<Task, Task, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterSortBy> thenByPriority() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'priority', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> thenByPriorityDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'priority', Sort.desc);
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterSortBy> thenByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -963,13 +886,6 @@ extension TaskQuerySortThenBy on QueryBuilder<Task, Task, QSortThenBy> {
 }
 
 extension TaskQueryWhereDistinct on QueryBuilder<Task, Task, QDistinct> {
-  QueryBuilder<Task, Task, QDistinct> distinctByColor(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'color', caseSensitive: caseSensitive);
-    });
-  }
-
   QueryBuilder<Task, Task, QDistinct> distinctByDescription(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -989,6 +905,12 @@ extension TaskQueryWhereDistinct on QueryBuilder<Task, Task, QDistinct> {
     });
   }
 
+  QueryBuilder<Task, Task, QDistinct> distinctByPriority() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'priority');
+    });
+  }
+
   QueryBuilder<Task, Task, QDistinct> distinctByTitle(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1001,12 +923,6 @@ extension TaskQueryProperty on QueryBuilder<Task, Task, QQueryProperty> {
   QueryBuilder<Task, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
-    });
-  }
-
-  QueryBuilder<Task, String, QQueryOperations> colorProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'color');
     });
   }
 
@@ -1025,6 +941,12 @@ extension TaskQueryProperty on QueryBuilder<Task, Task, QQueryProperty> {
   QueryBuilder<Task, bool, QQueryOperations> isDoneProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isDone');
+    });
+  }
+
+  QueryBuilder<Task, int, QQueryOperations> priorityProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'priority');
     });
   }
 

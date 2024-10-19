@@ -46,7 +46,6 @@ class DatabaseService {
         habitToUpdate.title = habit.title;
         habitToUpdate.description = habit.description;
         habitToUpdate.isGood = habit.isGood;
-        habitToUpdate.color = habit.color;
         await isar.habits.put(habitToUpdate);
       } else {
         await isar.habits.put(habit);
@@ -64,8 +63,21 @@ class DatabaseService {
     });
   }
 
-  Future<List<Task>> getTasks() async {
-    return await isar.tasks.where(sort: Sort.asc).anyDueDateTime().findAll();
+  Future<void> incrementHabitCounter(int id) async {
+    await isar.writeTxn(() async {
+      final Habit? habitToUpdate = await isar.habits.filter().idEqualTo(id).findFirst();
+      if (habitToUpdate != null) {
+        habitToUpdate.counter += 1;
+        await isar.habits.put(habitToUpdate);
+      }
+    });
+  }
+
+  Future<List<Task>> getTasks([bool? isDone]) async {
+    return await isar.tasks.where().anyDueDateTime().filter().optional(
+      isDone != null,
+      (task) => task.isDoneEqualTo(isDone!),
+    ).findAll();
   }
 
   Future<List<Habit>> getHabits() async {
@@ -83,7 +95,7 @@ class DatabaseService {
   Future<bool> clearHabit(int id) async {
     late bool success;
     await isar.writeTxn(() async {
-      success = await isar.tasks.delete(id);
+      success = await isar.habits.delete(id);
     });
     return success;
   }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skuld/provider/quest_provider.dart';
-import 'package:skuld/screens/form_screen.dart';
-import 'package:skuld/screens/game_screen.dart';
+// import 'package:skuld/screens/game_screen.dart';
 import 'package:skuld/screens/habits_screen.dart';
 import 'package:skuld/screens/tasks_screen.dart';
 
@@ -14,44 +13,40 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late QuestProvider _questProvider;
-  int currentScreenIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _questProvider = Provider.of<QuestProvider>(context, listen: false);
-  }
+  final List<Widget> _screens = const [
+    // GameScreen(),
+    TasksScreen(),
+    HabitsScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: [
-          const GameScreen(),
-          const TasksScreen(),
-          const FormScreen(),
-          const HabitsScreen(),
-        ].elementAt(currentScreenIndex)
+        child: Consumer<QuestProvider>(
+          builder: (context, questProvider, child) {
+            return IndexedStack(
+              index: questProvider.currentScreenIndex,
+              children: _screens,
+            );
+          },
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentScreenIndex,
-        type: BottomNavigationBarType.fixed,
-        selectedFontSize: 14,
-        unselectedFontSize: 14,
-        onTap: (index) {
-          if (currentScreenIndex == index) { return; }
-          setState(() {
-            currentScreenIndex = index;
-          });
+      bottomNavigationBar: Consumer<QuestProvider>(
+        builder: (context, questProvider, child) {
+          return BottomNavigationBar(
+            currentIndex: questProvider.currentScreenIndex,
+            type: BottomNavigationBarType.fixed,
+            selectedFontSize: 14,
+            unselectedFontSize: 14,
+            onTap: (index) => questProvider.updateScreenIndex(index),
+            items: const [
+              // BottomNavigationBarItem(label: 'Player', icon: Icon(Icons.gamepad_rounded)),
+              BottomNavigationBarItem(label: 'Tasks', icon: Icon(Icons.checklist_rounded)),
+              BottomNavigationBarItem(label: 'Habits', icon: Icon(Icons.psychology_rounded)),
+            ],
+          );
         },
-        items: [
-          const BottomNavigationBarItem(label: 'Player', icon: Icon(Icons.gamepad_rounded)),
-          const BottomNavigationBarItem(label: 'Tasks', icon: Icon(Icons.menu_rounded)),
-          const BottomNavigationBarItem(label: 'Add', icon: Icon(Icons.add_rounded)),
-          const BottomNavigationBarItem(label: 'Habits', icon: Icon(Icons.menu_rounded)),
-        ],
       ),
     );
   }

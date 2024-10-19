@@ -23,7 +23,7 @@ class _GameScreenState extends State<GameScreen> {
               exp += 10;
             });
           },
-          child: Text('Gain EXP'),
+          child: const Text('Gain EXP'),
         ),
       ],
     );

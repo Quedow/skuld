@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:skuld/provider/database_service.dart';
 import 'package:skuld/provider/quest_provider.dart';
 import 'package:skuld/screens/home_screen.dart';
+import 'package:skuld/utils/styles.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +29,9 @@ class MyGameApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomeScreen(),
+    return MaterialApp(
+      home: const HomeScreen(),
+      theme: Styles.themeData,
       debugShowCheckedModeBanner: false,
     );
   }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:skuld/models/habit.dart';
+import 'package:skuld/models/quest.dart';
 import 'package:skuld/provider/database_service.dart';
-import 'package:skuld/utils/functions.dart';
+import 'package:skuld/screens/form_screen.dart';
+import 'package:skuld/utils/common_text.dart';
+import 'package:skuld/widgets/habit_card.dart';
 
 class HabitsScreen extends StatefulWidget {
-
   const HabitsScreen({super.key});
 
   @override
@@ -13,46 +15,94 @@ class HabitsScreen extends StatefulWidget {
 
 class _HabitsScreenState extends State<HabitsScreen> {
   final DatabaseService _db = DatabaseService();
-  late Future<List<Habit>> _habits;
   
+  late ValueNotifier<List<Habit>> _habitsNotifier;
+
   @override
   void initState() {
     super.initState();
-    _habits = _db.getHabits();
+    _habitsNotifier = ValueNotifier<List<Habit>>([]);
+    _fetchHabits();
+  }
+
+  @override
+  void dispose() {
+    _habitsNotifier.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Habit>>(
-      future: _habits,
-      builder: (BuildContext context, AsyncSnapshot<List<Habit>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (snapshot.hasError) {
-          return const Center(child: Text('Error when loading habits'));
-        }
-
-        final List<Habit> habits = snapshot.data ?? [];
-
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: habits.length,
-          itemBuilder: (context, index) {
-            final Habit habit = habits[index];
-
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: ListTile(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                tileColor: const Color(0xFFE1E1E1),
-                title: Text(habit.title, style: TextStyle(color: Functions.getColor(habit.color))),
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: Stack(
+        alignment: AlignmentDirectional.bottomEnd,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  Texts.textHabitTitle,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
               ),
-            );
-          },
-        );
-      }
+              Expanded(
+                // Use ValueListenableBuilder for efficient state updates.
+                child: ValueListenableBuilder<List<Habit>>(
+                  valueListenable: _habitsNotifier,
+                  builder: (BuildContext context, List<Habit> habits, _) {
+                    if (habits.isEmpty) {
+                      return Center(child: Text(Texts.textNoHabit, style: Theme.of(context).textTheme.bodyLarge));
+                    }
+
+                    return ListView.builder(
+                      itemCount: habits.length,
+                      itemBuilder: (context, index) {
+                        Habit habit = habits[index];
+                        return HabitCard(
+                          habit: habit,
+                          onTap: () => _createOrUpdateHabit({QuestType.habit: habit}),
+                          onPressed: () => _incrementHabitCounter(habit),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          FloatingActionButton(
+            heroTag: UniqueKey(),
+            elevation: 2,
+            shape: const CircleBorder(),
+            onPressed: _createOrUpdateHabit,
+            child: const Icon(Icons.add_rounded),
+          ),
+        ],
+      ),
     );
+  }
+
+  Future<void> _createOrUpdateHabit([Map<QuestType, dynamic>? typeAndQuest]) async {
+    bool result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: typeAndQuest)),
+    ) ?? false;
+
+    if (result) {
+      await _fetchHabits();
+    }
+  }
+
+  Future<void> _incrementHabitCounter(Habit habit) async {
+    await _db.incrementHabitCounter(habit.id);
+    habit.counter++;
+    _habitsNotifier.value = List.from(_habitsNotifier.value);
+  }
+
+  Future<void> _fetchHabits() async {
+    _habitsNotifier.value = await _db.getHabits();
   }
 }
