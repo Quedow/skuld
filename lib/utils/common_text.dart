@@ -14,6 +14,8 @@ abstract class Texts {
   static String textHabitTitle = 'HABITS';
   static String textNoHabit = '🤔 No task for now...';
 
+  static String textDeletionDialog = 'Do you confirm the deletion?';
+
   // Errors
   static String errorLoadingTasks = 'Error when loading tasks';
   static String errorLoadingHabits = 'Error when loading habits';

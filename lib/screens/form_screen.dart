@@ -7,6 +7,7 @@ import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/utils/rules.dart';
 import 'package:skuld/utils/styles.dart';
+import 'package:skuld/widgets/alerts.dart';
 
 class FormScreen extends StatefulWidget {
   final Map<QuestType, dynamic>? typeAndQuest;
@@ -136,7 +137,7 @@ class _FormScreenState extends State<FormScreen> {
       appBar: AppBar(
         title: Text(Texts.textTitleForm(_isEditMode, _questType), style: Theme.of(context).textTheme.titleLarge),
         actions: _isEditMode ? [
-          IconButton(onPressed: _deleteQuest, icon: const Icon(Icons.delete_rounded)),
+          IconButton(onPressed: () => Alerts.deletionDialog(context, _deleteQuest), icon: const Icon(Icons.delete_rounded)),
         ] : null,
       ),
       body: Padding(
@@ -291,7 +292,9 @@ class _FormScreenState extends State<FormScreen> {
     final TimeOfDay? dueTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      initialEntryMode: TimePickerEntryMode.inputOnly,
     );
+
     if (dueTime != null && dueTime != _timeController) {
       setState(() => _timeController = dueTime);
     }

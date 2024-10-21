@@ -11,6 +11,8 @@ class HabitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color counterColor = !habit.isGood && habit.counter > 0 ? Theme.of(context).colorScheme.error : Colors.black;
+
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -30,14 +32,15 @@ class HabitCard extends StatelessWidget {
                   color: habit.isGood ? isGoodColor : isNotGoodColor,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15),
-                child: Text(habit.title, style: Theme.of(context).textTheme.bodyLarge),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Text(habit.title, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge),
+                ),
               ),
-              const Spacer(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: Text(habit.counter.toString(), style: Theme.of(context).textTheme.bodyLarge),
+                child: Text(habit.counter.toString(), style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: counterColor)),
               ),
               IconButton(
                 onPressed: onPressed,

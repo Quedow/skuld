@@ -29,19 +29,23 @@ abstract class Styles {
       primary: primaryColor,
       onPrimary: Colors.white,
       secondary: secondaryColor,
+      // tertiary: darkPrimaryColor,
+      // onTertiary: Colors.white,
       onSecondary: Colors.black,
-      tertiary: darkPrimaryColor,
-      onTertiary: Colors.white,
       error: redColor,
       onError: Colors.white,
       surface: Colors.white, // Top bar, bottom bar, card and background
       onSurface: darkColor,
-      surfaceContainerHighest: unselectedItemColor, // Disable switch background, textfield filled
+      surfaceContainerHighest: unselectedItemColor, // Disable switch background, textfield filled, time picker hour background
       outline: hintColor, // Textfield border, button border
       outlineVariant: hintColor, // Divider
       inverseSurface: darkPrimaryColor, // Snack bar
       onInverseSurface: Colors.white,
       surfaceTint: darkColor,
+    ),
+    timePickerTheme: const TimePickerThemeData(
+      hourMinuteColor: lightPrimaryColor,
+      hourMinuteTextColor: Colors.black,
     ),
     dialogBackgroundColor: Colors.white,
     hintColor: hintColor,
