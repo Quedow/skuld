@@ -15,6 +15,8 @@ dependencies:
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
   path_provider: ^2.1.4
+  jiffy: ^6.3.1
+  choice: ^2.3.2
 
 dev_dependencies:
   flutter_test:

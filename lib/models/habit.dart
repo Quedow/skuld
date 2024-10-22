@@ -15,5 +15,10 @@ class Habit {
   Habit(this.title, this.description, this.isGood);
 }
 
+const Map<bool, String> isGoodToLabel = {
+  true: 'Good Habit',
+  false: 'Bad Habit'
+};
+
 const Color isGoodColor = Styles.greenColor;
 const Color isNotGoodColor = Styles.redColor;

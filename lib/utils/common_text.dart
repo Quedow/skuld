@@ -14,6 +14,10 @@ abstract class Texts {
   static String textHabitTitle = 'HABITS';
   static String textNoHabit = '🤔 No task for now...';
 
+  static String textRoutinesTitle = 'ROUTINES';
+  static String textDoneRoutinesBtn = 'DONE ROUTINES';
+  static String textNoRoutine = '🤔 No routines for now...';
+
   static String textDeletionDialog = 'Do you confirm the deletion?';
 
   // Errors
@@ -22,4 +26,5 @@ abstract class Texts {
 
   // Rules
   static String errorRequiredRule = 'This filed cannot be empty';
+  static String errorIntegerRule = 'This field must be a whole number';
 }

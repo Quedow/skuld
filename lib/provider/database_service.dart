@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:skuld/models/habit.dart';
+import 'package:skuld/models/routine.dart';
 import 'package:skuld/models/task.dart';
 
 class DatabaseService {
@@ -18,7 +19,7 @@ class DatabaseService {
   Future<Isar> init() async {
     final Directory dir = await getApplicationDocumentsDirectory();
     isar = await Isar.open(
-      [TaskSchema, HabitSchema],
+      [TaskSchema, HabitSchema, RoutineSchema],
       directory: dir.path,
       inspector: true, // set to false for build
     );
@@ -41,15 +42,13 @@ class DatabaseService {
 
   Future<void> insertOrUpdateHabit(Habit habit) async {
     await isar.writeTxn(() async {
-      final Habit? habitToUpdate = await isar.habits.filter().idEqualTo(habit.id).findFirst();
-      if (habitToUpdate != null) {
-        habitToUpdate.title = habit.title;
-        habitToUpdate.description = habit.description;
-        habitToUpdate.isGood = habit.isGood;
-        await isar.habits.put(habitToUpdate);
-      } else {
-        await isar.habits.put(habit);
-      }
+      await isar.habits.put(habit);
+    });
+  }
+
+  Future<void> insertOrUpdateRoutine(Routine routine) async {
+    await isar.writeTxn(() async {
+      await isar.routines.put(routine);
     });
   }
 
@@ -84,6 +83,13 @@ class DatabaseService {
     return await isar.habits.where().findAll();
   }
 
+  Future<List<Routine>> getRoutines([bool? isDone]) async {
+    return await isar.routines.where().anyDueDateTime().filter().optional(
+      isDone != null,
+      (routine) => routine.isDoneEqualTo(isDone!),
+    ).findAll();
+  }
+
   Future<bool> clearTask(int id) async {
     late bool success;
     await isar.writeTxn(() async {
@@ -104,5 +110,13 @@ class DatabaseService {
     await isar.writeTxn(() async {
       await isar.clear();
     });
+  }
+
+  Future<bool> clearRoutine(int id) async {
+    late bool success;
+    await isar.writeTxn(() async {
+      success = await isar.routines.delete(id);
+    });
+    return success;
   }
 }

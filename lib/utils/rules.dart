@@ -11,4 +11,14 @@ abstract class Rules {
     }
     return null;
   }
+
+  static String? isInteger(String? value) {
+    String? isNull = isNotEmpty(value);
+    if (isNull != null) {
+      return isNull;
+    } else if (int.tryParse(value!) == null) {
+      return Texts.errorIntegerRule;
+    }
+    return null;
+  }
 }
