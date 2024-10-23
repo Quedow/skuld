@@ -80,6 +80,12 @@ abstract class Styles {
     filledButtonTheme: FilledButtonThemeData(
       style: ButtonStyle(shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)))),
     ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: ButtonStyle(
+        shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius))),
+        side: const WidgetStatePropertyAll(BorderSide(color: primaryColor)),
+      ),
+    ),
     textTheme: const TextTheme(
       titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w500), // Page titles
       titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w500), // List titles

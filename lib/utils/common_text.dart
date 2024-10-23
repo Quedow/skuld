@@ -2,9 +2,18 @@ import 'package:skuld/models/quest.dart';
 
 abstract class Texts {
   static String textTitleForm(bool isEditMode, QuestType questType) {
-    return isEditMode 
-      ? 'Edit ${questType == QuestType.task ? "Task" : "Habit"}'
-      : 'Create ${questType == QuestType.task ? "Task" : "Habit"}';
+    switch (questType) {
+      case QuestType.task:
+        return isEditMode ? 'Edit Task' : 'Create Task';
+      case QuestType.habit:
+        return isEditMode ? 'Edit Habit' : 'Create Habit';
+      case QuestType.routine:
+        return isEditMode ? 'Edit Routine' : 'Create Routine';
+    }
+  }
+
+  static String textEndRoutine(bool isDone) {
+    return isDone ? 'Continue Routine' : 'End Routine';
   }
 
   static String textTasksTitle = 'TASKS';
@@ -15,7 +24,7 @@ abstract class Texts {
   static String textNoHabit = '🤔 No task for now...';
 
   static String textRoutinesTitle = 'ROUTINES';
-  static String textDoneRoutinesBtn = 'DONE ROUTINES';
+  static String textDoneRoutinesBtn = 'ENDED ROUTINES';
   static String textNoRoutine = '🤔 No routines for now...';
 
   static String textDeletionDialog = 'Do you confirm the deletion?';

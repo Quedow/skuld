@@ -139,7 +139,7 @@ class _FormScreenState extends State<FormScreen> {
                     InputText(controller: _descriptionController, label: 'Description', rules: Rules.free),
                     ..._questForm(),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 5),
                       child: FilledButton(onPressed: _submitForm, child: Text('Save', style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Colors.white))),
                     ),
                   ],
@@ -167,6 +167,11 @@ class _FormScreenState extends State<FormScreen> {
           IconSelector(icon: Icons.calendar_today_rounded, label: 'Start Date', value: Functions.getDate(_dateController), onPressed: () => _selectDate(context)),
           IconSelector(icon: Icons.access_time_rounded, label: 'Time', value: _timeController.format(context), onPressed: () => _selectTime(context)),
           FrequencySelector(frequencyController: _frequencyController, periodController: _periodController, daysController: _daysController, periodToLabel: periodToLabel, dayToLabel: dayToLabel, onPeriodChanged: (String? value) => setState(() => _periodController = value ?? 'd'), onFormSaved: (value) => _daysController = value ?? []),
+          if (_isEditMode)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: OutlinedButton(onPressed: _endRoutine, child: Text(Texts.textEndRoutine(_quest.isDone), style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).colorScheme.primary))),
+            ),
         ];
     }
   }
@@ -294,5 +299,11 @@ class _FormScreenState extends State<FormScreen> {
     _quest.dueDateTime = dueDateTime;
     
     await _db.insertOrUpdateRoutine(_quest);
+  }
+
+  Future<void> _endRoutine() async {
+    _quest.isDone = !_quest.isDone;
+    await _db.insertOrUpdateRoutine(_quest);
+    if (mounted) { Navigator.pop(context, true); }
   }
 }
