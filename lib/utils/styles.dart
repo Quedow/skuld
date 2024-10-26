@@ -8,7 +8,6 @@ abstract class Styles {
   static const Color blueColor = Color(0xFF2C82F2);
   static const Color greenColor = Color(0xFF2CF285);
   static const Color redColor = Color(0xFFF53B33);
-  static const Color greyColor = Colors.grey;
 
   static const Color lightPrimaryColor = Color(0xFFD5C8FF);
   static const Color primaryColor = Color(0xFF6133B4);
