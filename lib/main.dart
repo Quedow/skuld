@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:skuld/provider/database_service.dart';
 import 'package:skuld/provider/quest_provider.dart';
@@ -32,6 +33,11 @@ class MyGameApp extends StatelessWidget {
     return MaterialApp(
       home: const HomeScreen(),
       theme: Styles.themeData,
+      locale: const Locale('en', 'GB'),
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      supportedLocales: [
+        const Locale('en', 'GB'),
+      ],
       debugShowCheckedModeBanner: false,
     );
   }

@@ -17,6 +17,8 @@ dependencies:
   path_provider: ^2.1.4
   jiffy: ^6.3.1
   choice: ^2.3.2
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
