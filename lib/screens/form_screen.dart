@@ -136,7 +136,7 @@ class _FormScreenState extends State<FormScreen> {
                 child: Column(
                   children: [
                     InputText(controller: _titleController, label: 'Title', rules: Rules.isNotEmpty),
-                    InputText(controller: _descriptionController, label: 'Description', rules: Rules.free),
+                    InputText(controller: _descriptionController, label: 'Description', rules: Rules.free, multiLines: true),
                     ..._questForm(),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5),
