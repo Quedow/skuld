@@ -6,9 +6,9 @@ import 'package:skuld/utils/styles.dart';
 class RoutineCard extends StatelessWidget {
   final Routine routine;
   final void Function()? onTap;
-  final void Function(bool?)? onChanged;
+  final void Function(bool?)? onCheck;
 
-  const RoutineCard({super.key, required this.routine, required this.onTap, required this.onChanged});
+  const RoutineCard({super.key, required this.routine, required this.onTap, required this.onCheck});
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +28,13 @@ class RoutineCard extends StatelessWidget {
               width: 10, height: 64, // 64
               decoration: ShapeDecoration(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(Styles.borderRadius), bottomLeft: Radius.circular(Styles.borderRadius))),
-                color: Styles.greyColor,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             Checkbox(
               value: routine.isDone,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-              onChanged: onChanged,
+              onChanged: onCheck,
             ),
             Expanded(
               child: Padding(

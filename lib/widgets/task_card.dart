@@ -6,9 +6,9 @@ import 'package:skuld/utils/styles.dart';
 class TaskCard extends StatelessWidget {
   final Task task;
   final void Function()? onTap;
-  final void Function(bool?)? onChanged;
+  final void Function(bool?)? onCheck;
 
-  const TaskCard({super.key, required this.task, required this.onTap, required this.onChanged});
+  const TaskCard({super.key, required this.task, required this.onTap, required this.onCheck});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class TaskCard extends StatelessWidget {
             Checkbox(
               value: task.isDone,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-              onChanged: onChanged,
+              onChanged: onCheck,
             ),
             Expanded(
               child: Padding(

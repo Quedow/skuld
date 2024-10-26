@@ -64,7 +64,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                         return HabitCard(
                           habit: habit,
                           onTap: () => _createOrUpdateHabit({QuestType.habit: habit}),
-                          onPressed: () => _incrementHabitCounter(habit),
+                          onIncrement: () => _incrementHabitCounter(habit),
                         );
                       },
                     );

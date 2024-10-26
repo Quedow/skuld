@@ -42,24 +42,30 @@ class _TasksScreenState extends State<TasksScreen> {
       child: Stack(
         alignment: AlignmentDirectional.bottomEnd,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
+          CustomScrollView(
+            slivers: [
+              SliverPadding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Text(Texts.textTasksTitle, style: Theme.of(context).textTheme.bodyLarge),
+                sliver: SliverToBoxAdapter(
+                  child: Text(Texts.textTasksTitle, style: Theme.of(context).textTheme.bodyLarge),
+                ),
               ),
               _taskList(_tasksNotifier),
-              TextButton.icon(
-                onPressed: () => setState(() => _displayDoneTasks = !_displayDoneTasks),
-                style: const ButtonStyle(
-                  padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                  overlayColor: WidgetStatePropertyAll(Colors.transparent),
+              SliverToBoxAdapter(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () => setState(() => _displayDoneTasks = !_displayDoneTasks),
+                    style: const ButtonStyle(
+                      padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                      overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                    ),
+                    label: Text(Texts.textDoneTasksBtn, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
+                    icon: Icon(_displayDoneTasks ? Icons.keyboard_arrow_down_rounded : Icons.keyboard_arrow_right_rounded),
+                  ),
                 ),
-                label: Text(Texts.textDoneTasksBtn, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
-                icon: Icon(_displayDoneTasks ? Icons.keyboard_arrow_down_rounded : Icons.keyboard_arrow_right_rounded),
               ),
-              if (_displayDoneTasks) 
+              if (_displayDoneTasks)
                 _taskList(_doneTasksNotifier),
             ],
           ),
@@ -80,23 +86,25 @@ class _TasksScreenState extends State<TasksScreen> {
       valueListenable: taskNotifier,
       builder: (context, tasks, _) {
         if (tasks.isEmpty) {
-          return Center(child: Text(Texts.textNoTask, style: Theme.of(context).textTheme.bodyLarge));
+          return SliverToBoxAdapter(
+            child: Center(child: Text(Texts.textNoTask, style: Theme.of(context).textTheme.bodyLarge)),
+          );
         }
-        return ListView.builder(
-          shrinkWrap: true,
+        return SliverList.builder(
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             Task task = tasks[index];
             return TaskCard(
               task: task,
               onTap: () => _createOrUpdateTask({QuestType.task: task}),
-              onChanged: (value) => _completeTask(task, value),
+              onCheck: (value) => _completeTask(task, value),
             );
           },
         );
       },
     );
   }
+
 
   Future<void> _createOrUpdateTask([Map<QuestType, Task>? typeAndQuest]) async {
     bool result = await Navigator.push(

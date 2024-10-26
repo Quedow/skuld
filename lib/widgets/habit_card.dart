@@ -5,9 +5,9 @@ import 'package:skuld/utils/styles.dart';
 class HabitCard extends StatelessWidget {
   final Habit habit;
   final void Function()? onTap;
-  final void Function()? onPressed;
+  final void Function()? onIncrement;
   
-  const HabitCard({super.key, required this.habit, required this.onTap, required this.onPressed});
+  const HabitCard({super.key, required this.habit, required this.onTap, required this.onIncrement});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class HabitCard extends StatelessWidget {
                 child: Text(habit.counter.toString(), style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: counterColor)),
               ),
               IconButton(
-                onPressed: onPressed,
+                onPressed: onIncrement,
                 icon: const Icon(Icons.add_rounded),
               ),
             ],

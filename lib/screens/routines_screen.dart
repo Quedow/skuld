@@ -43,22 +43,28 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
       child: Stack(
         alignment: AlignmentDirectional.bottomEnd,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
+          CustomScrollView(
+            slivers: [
+              SliverPadding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Text(Texts.textRoutinesTitle, style: Theme.of(context).textTheme.bodyLarge),
+                sliver: SliverToBoxAdapter(
+                  child: Text(Texts.textRoutinesTitle, style: Theme.of(context).textTheme.bodyLarge),
+                ),
               ),
               _routineList(_routinesNotifier),
-              TextButton.icon(
-                onPressed: () => setState(() => _displayDoneRoutines = !_displayDoneRoutines),
-                style: const ButtonStyle(
-                  padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                  overlayColor: WidgetStatePropertyAll(Colors.transparent),
+              SliverToBoxAdapter(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () => setState(() => _displayDoneRoutines = !_displayDoneRoutines),
+                    style: const ButtonStyle(
+                      padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                      overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                    ),
+                    label: Text(Texts.textDoneRoutinesBtn, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
+                    icon: Icon(_displayDoneRoutines ? Icons.keyboard_arrow_down_rounded : Icons.keyboard_arrow_right_rounded),
+                  ),
                 ),
-                label: Text(Texts.textDoneRoutinesBtn, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
-                icon: Icon(_displayDoneRoutines ? Icons.keyboard_arrow_down_rounded : Icons.keyboard_arrow_right_rounded),
               ),
               if (_displayDoneRoutines) 
                 _routineList(_doneRoutinesNotifier),
@@ -81,17 +87,18 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
       valueListenable: routineNotifier,
       builder: (context, routines, _) {
         if (routines.isEmpty) {
-          return Center(child: Text(Texts.textNoRoutine, style: Theme.of(context).textTheme.bodyLarge));
+          return SliverToBoxAdapter(
+            child: Center(child: Text(Texts.textNoRoutine, style: Theme.of(context).textTheme.bodyLarge)),
+          );
         }
-        return ListView.builder(
-          shrinkWrap: true,
+        return SliverList.builder(
           itemCount: routines.length,
           itemBuilder: (context, index) {
             Routine routine = routines[index];
             return RoutineCard(
               routine: routine,
               onTap: () => _createOrUpdateRoutine({QuestType.routine: routine}),
-              onChanged: (value) => _completeRoutine(routine, value),
+              onCheck: (value) => _completeRoutine(routine),
             );
           },
         );
@@ -110,7 +117,9 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
     }
   }
 
-  Future<void> _completeRoutine(Routine routine, bool? value) async {
+  Future<void> _completeRoutine(Routine routine) async {
+    if (routine.isDone) { return; }
+
     setState(() {
       routine.isDone = true;
     });
