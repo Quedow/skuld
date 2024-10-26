@@ -106,17 +106,17 @@ class DatabaseService {
     return success;
   }
 
-  Future<void> clearDatabase() async {
-    await isar.writeTxn(() async {
-      await isar.clear();
-    });
-  }
-
   Future<bool> clearRoutine(int id) async {
     late bool success;
     await isar.writeTxn(() async {
       success = await isar.routines.delete(id);
     });
     return success;
+  }
+
+  Future<void> clearDatabase() async {
+    await isar.writeTxn(() async {
+      await isar.clear();
+    });
   }
 }

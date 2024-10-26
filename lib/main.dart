@@ -2,8 +2,10 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
-import 'package:skuld/provider/database_service.dart';
+import 'package:skuld/database/database_service.dart';
+import 'package:skuld/database/migration.dart';
 import 'package:skuld/provider/quest_provider.dart';
 import 'package:skuld/screens/home_screen.dart';
 import 'package:skuld/utils/styles.dart';
@@ -15,7 +17,8 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  await DatabaseService().init();
+  final Isar isar = await DatabaseService().init();
+  await performMigrationIfNeeded(isar);
 
   runApp(
     ChangeNotifierProvider(

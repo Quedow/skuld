@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/quest.dart';
-import 'package:skuld/provider/database_service.dart';
+import 'package:skuld/database/database_service.dart';
 import 'package:skuld/screens/form_screen.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/widgets/habit_card.dart';
