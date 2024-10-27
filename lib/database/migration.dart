@@ -9,7 +9,7 @@ Future<void> performMigrationIfNeeded(Isar isar) async {
 
 Future<void> clearOldQuests(Isar isar) async {
   await isar.writeTxn(() async {
-    DateTime deletionDate = Jiffy.now().subtract(weeks: 2).dateTime;
+    DateTime deletionDate = Jiffy.now().subtract(months: 1).dateTime;
     await isar.tasks.filter().isDoneEqualTo(true).dueDateTimeLessThan(deletionDate).deleteAll();
     await isar.routines.filter().isDoneEqualTo(true).dueDateTimeLessThan(deletionDate).deleteAll();
   });
