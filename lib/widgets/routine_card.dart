@@ -1,5 +1,7 @@
+import 'package:extended_wrap/extended_wrap.dart';
 import 'package:flutter/material.dart';
 import 'package:skuld/models/routine.dart';
+import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/utils/styles.dart';
 
@@ -46,15 +48,19 @@ class RoutineCard extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 2),
                       child: Text(routine.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge!.copyWith(decoration: routine.isDone ? TextDecoration.lineThrough : TextDecoration.none)),
                     ),
-                    Wrap(
+                    ExtendedWrap(
                       alignment: WrapAlignment.start,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 5,
+                      maxLines: 1,
+                      overflowWidget: const Text('...'),
                       children: [
                         Icon(Icons.access_time_rounded, size: 15, color: dateTimeColor),
                         Text(Functions.getTime(routine.dueDateTime), style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
                         Icon(Icons.calendar_today_rounded, size: 15, color: dateTimeColor),
                         Text(Functions.getDate(routine.dueDateTime), style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
+                        const Icon(Icons.loop_rounded, size: 15),
+                        Text(Texts.textRoutineDetail(routine.frequency, routine.period), style: Theme.of(context).textTheme.bodyMedium),
                       ],
                     ),
                   ],

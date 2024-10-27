@@ -1,4 +1,5 @@
 import 'package:skuld/models/quest.dart';
+import 'package:skuld/models/routine.dart';
 
 abstract class Texts {
   static String textTitleForm(bool isEditMode, QuestType questType) {
@@ -14,6 +15,10 @@ abstract class Texts {
 
   static String textEndRoutine(bool isDone) {
     return isDone ? 'Continue Routine' : 'End Routine';
+  }
+
+  static String textRoutineDetail(int frequency, String period) {
+    return 'All $frequency ${periodToLabel[period]?.toLowerCase()}';
   }
 
   static String textTasksTitle = 'TASKS';
