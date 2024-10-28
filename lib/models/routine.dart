@@ -19,10 +19,10 @@ class Routine {
 }
 
 const Map<String, String> periodToLabel = {
-  'd': 'Days',
-  'w': 'Weeks',
-  'm': 'Months',
-  'y': 'Years',
+  'd': 'days',
+  'w': 'weeks',
+  'm': 'months',
+  'y': 'years',
 };
 
 const Map<int, String> dayToLabel = {

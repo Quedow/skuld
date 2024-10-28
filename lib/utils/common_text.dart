@@ -18,7 +18,7 @@ abstract class Texts {
   }
 
   static String textRoutineDetail(int frequency, String period) {
-    return 'All $frequency ${periodToLabel[period]?.toLowerCase()}';
+    return 'All $frequency ${periodToLabel[period]}';
   }
 
   static String textTasksTitle = 'TASKS';
@@ -33,6 +33,11 @@ abstract class Texts {
   static String textNoRoutine = '🤔 No routines for now...';
 
   static String textDeletionDialog = 'Do you confirm the deletion?';
+
+  static String textDeletionFrequency = 'Deletion frequency';
+  static String textDeletionFrequencyContent = 'Quests with due date prior to the selected setting will be deleted.';
+  static String textDeletePrefs = 'Delete preferences';
+  static String textDeletePrefsContent = 'Preference settings will be reset default values.';
 
   // Errors
   static String errorLoadingTasks = 'Error when loading tasks';

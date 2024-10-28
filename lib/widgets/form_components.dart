@@ -1,5 +1,6 @@
 import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
+import 'package:skuld/utils/rules.dart';
 
 class SegmentedButtonQuest<T> extends StatelessWidget {
   final T selectedValue;
@@ -152,7 +153,7 @@ class FrequencySelector extends StatelessWidget {
                       hintText: '',
                       border: UnderlineInputBorder(),
                     ),
-                    validator: (value) => value != null && int.tryParse(value) != null ? null : 'Enter a valid number',
+                    validator: Rules.isInteger,
                   ),
                 ),
                 SizedBox(

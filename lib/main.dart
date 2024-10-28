@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:skuld/database/database_service.dart';
 import 'package:skuld/database/migration.dart';
 import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/provider/settings_service.dart';
 import 'package:skuld/screens/home_screen.dart';
 import 'package:skuld/utils/styles.dart';
 
@@ -17,6 +18,7 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
 
+  await SettingsService().init();
   final Isar isar = await DatabaseService().init();
   await performMigrationIfNeeded(isar);
 
