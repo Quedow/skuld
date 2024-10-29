@@ -32,6 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return ListView(
       children: [
+        const Divider(height: 1, thickness: 1),
         _settingDropdown(Texts.textDeletionFrequency, Texts.textDeletionFrequencyContent, _deletionFrequency, _setDeletionFrequency),
         const Divider(height: 1, thickness: 1),
         _settingIconButton(Texts.textDeletePrefs, Texts.textDeletePrefsContent, Icons.delete_rounded, () => Alerts.deletionDialog(context, _settings.clearSettings)),
