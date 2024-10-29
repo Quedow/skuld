@@ -30,7 +30,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Consumer<QuestProvider>(
-        builder: (context, questProvider, _) => Expanded(child: _habitList(questProvider.habits)),
+        builder: (context, questProvider, _) => _habitList(questProvider.habits),
       ),
     );
   }
