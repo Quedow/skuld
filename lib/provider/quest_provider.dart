@@ -43,6 +43,7 @@ class QuestProvider with ChangeNotifier {
   Future<void> completeTask(Task task, bool? value) async {
     final bool state = value ?? task.isDone;
     await DatabaseService().completeTask(task.id, state);
+    await fetchDoneRates();
     await fetchTasks();
   }
 
@@ -95,5 +96,12 @@ class QuestProvider with ChangeNotifier {
       context,
       MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: typeAndQuest)),
     ) ?? false;
+  }
+
+  List<int> _doneRates = [0, 0];
+  List<int> get doneRates => _doneRates;
+
+  Future<void> fetchDoneRates() async {
+    _doneRates = await  _db.getDoneRates();
   }
 }

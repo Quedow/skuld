@@ -21,6 +21,10 @@ abstract class Texts {
     return 'All $frequency ${periodToLabel[period]}';
   }
 
+  static String textDoneRate(int value, bool isWeek) {
+    return '$value % (${isWeek ? 'WEEK' : 'TODAY'})';
+  }
+
   static String textTasksTitle = 'TASKS';
   static String textDoneTasksBtn = 'DONE TASKS';
   static String textNoTask = '🤔 No task for now...';

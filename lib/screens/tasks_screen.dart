@@ -18,12 +18,14 @@ class TasksScreen extends StatefulWidget {
 class _TasksScreenState extends State<TasksScreen> {
   late final QuestProvider _questProvider;
   bool _displayDoneTasks = false;
+ final ValueNotifier<int> _rateIndex = ValueNotifier(0);
 
   @override
   void initState() {
     super.initState();
     _questProvider = widget.questProvider;
     _questProvider.fetchTasks();
+    _questProvider.fetchDoneRates();
   }
 
   @override
@@ -33,6 +35,21 @@ class _TasksScreenState extends State<TasksScreen> {
       child: Consumer<QuestProvider>(
         builder: (context, questProvider, _) => CustomScrollView(
           slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 5),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: ValueListenableBuilder<int>(
+                    valueListenable: _rateIndex,
+                    builder: (context, rateIndex, _) => GestureDetector(
+                      onTap: () => _rateIndex.value = (rateIndex + 1) % questProvider.doneRates.length,
+                      child: Text(Texts.textDoneRate(questProvider.doneRates[rateIndex], rateIndex == 1), style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
+                    ),
+                  ),
+                ),
+              ),
+            ),
             _taskList(questProvider.tasks),
             SliverToBoxAdapter(
               child: Align(

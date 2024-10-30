@@ -90,6 +90,32 @@ class DatabaseService {
     ).findAll();
   }
 
+  Future<List<int>> getDoneRates() async {
+    final DateTime now = DateTime.now();
+    
+    final DateTime startOfDay = DateTime(now.year, now.month, now.day);
+    final DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+    final DateTime startOfWeek = DateTime(now.year, now.month, now.day - (now.weekday - 1));
+    final DateTime endOfWeek = DateTime(now.year, now.month, now.day + (7 - now.weekday), 23, 59, 59);
+
+    final List<int> results = await Future.wait([
+      isar.tasks.filter().dueDateTimeBetween(startOfDay, endOfDay).count(),
+      isar.tasks.filter().dueDateTimeBetween(startOfDay, endOfDay).isDoneEqualTo(true).count(),
+      isar.tasks.filter().dueDateTimeBetween(startOfWeek, endOfWeek).count(),
+      isar.tasks.filter().dueDateTimeBetween(startOfWeek, endOfWeek).isDoneEqualTo(true).count(),
+    ]);
+
+    final int dayTotal = results[0];
+    final int doneDayTotal = results[1];
+    final int weekTotal = results[2];
+    final int doneWeekTotal = results[3];
+
+    final int dayRate = dayTotal > 0 ? (100 * doneDayTotal / dayTotal).round() : 100;
+    final int weekRate = weekTotal > 0 ? (100 * doneWeekTotal / weekTotal).round() : 100;
+    return [dayRate, weekRate];
+  }
+
   Future<bool> clearTask(int id) async {
     late bool success;
     await isar.writeTxn(() async {
