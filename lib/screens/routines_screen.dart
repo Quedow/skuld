@@ -70,7 +70,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
         Routine routine = routines[index];
         return RoutineCard(
           routine: routine,
-          onTap: () => _questProvider.createOrUpdateRoutine(context, {QuestType.routine: routine}),
+          onTap: () => Functions.navigateToFormScreen(context, {QuestType.routine: routine}),
           onCheck: (value) => _completeRoutine(routine),
         );
       },

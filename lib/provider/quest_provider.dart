@@ -4,7 +4,6 @@ import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
 import 'package:skuld/models/task.dart';
-import 'package:skuld/screens/form_screen.dart';
 
 class QuestProvider with ChangeNotifier {
   final DatabaseService _db = DatabaseService();
@@ -26,14 +25,6 @@ class QuestProvider with ChangeNotifier {
   List<Task> _doneTasks = [];
   List<Task> get doneTasks => _doneTasks;
 
-  Future<void> createOrUpdateTask(BuildContext context, [Map<QuestType, Task>? typeAndQuest]) async {
-    bool result = await _navigateToFormScreen(context, typeAndQuest);
-
-    if (result) {
-      await fetchTasks();
-    }
-  }
-
   Future<void> fetchTasks() async {
     _tasks = await _db.getTasks(false);
     _doneTasks = await _db.getTasks(true);
@@ -47,17 +38,17 @@ class QuestProvider with ChangeNotifier {
     await fetchTasks();
   }
 
+
+  List<int> _doneRates = [0, 0];
+  List<int> get doneRates => _doneRates;
+
+  Future<void> fetchDoneRates() async {
+    _doneRates = await  _db.getDoneRates();
+  }
+
   // Habits
   List<Habit> _habits = [];
   List<Habit> get habits => _habits;
-
-  Future<void> createOrUpdateHabit(BuildContext context, [Map<QuestType, Habit>? typeAndQuest]) async {
-    bool result = await _navigateToFormScreen(context, typeAndQuest);
-
-    if (result) {
-      await fetchHabits();
-    }
-  }
 
   Future<void> fetchHabits() async {
     _habits = await _db.getHabits();
@@ -65,8 +56,10 @@ class QuestProvider with ChangeNotifier {
   }
 
   Future<void> incrementHabitCounter(int index, int habitId) async {
-    await _db.incrementHabitCounter(habitId);
+    DateTime now = DateTime.now();
+    await _db.incrementHabitCounter(habitId, now);
     _habits[index].counter++;
+    _habits[index].lastDateTime = now;
     notifyListeners();
   }
 
@@ -77,31 +70,26 @@ class QuestProvider with ChangeNotifier {
   List<Routine> _doneRoutines = [];
   List<Routine> get doneRoutines => _doneRoutines;
 
-  Future<void> createOrUpdateRoutine(BuildContext context, [Map<QuestType, Routine>? typeAndQuest]) async {
-    bool result = await _navigateToFormScreen(context, typeAndQuest);
-
-    if (result) {
-      await fetchRoutines();
-    }
-  }
-
   Future<void> fetchRoutines() async {
     _routines = await _db.getRoutines(false);
     _doneRoutines = await _db.getRoutines(true);
     notifyListeners();
   }
 
-  Future<bool> _navigateToFormScreen(BuildContext context, [Map<QuestType, dynamic>? typeAndQuest]) async {
-    return await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: typeAndQuest)),
-    ) ?? false;
-  }
-
-  List<int> _doneRates = [0, 0];
-  List<int> get doneRates => _doneRates;
-
-  Future<void> fetchDoneRates() async {
-    _doneRates = await  _db.getDoneRates();
+  Future<void> refreshData(QuestType questType, bool isUpdate) async {
+    switch (questType) {
+      case QuestType.task:
+        if (!isUpdate) {
+          await fetchDoneRates();
+        }
+        await fetchTasks();
+        break;
+      case QuestType.habit:
+        await fetchHabits();
+        break;
+      case QuestType.routine:
+        await fetchRoutines();
+        break;
+    }
   }
 }

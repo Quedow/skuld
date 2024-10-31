@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/database/database_service.dart';
+import 'package:skuld/provider/quest_provider.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/utils/rules.dart';
@@ -21,6 +23,7 @@ class FormScreen extends StatefulWidget {
 
 class _FormScreenState extends State<FormScreen> {
   final DatabaseService _db = DatabaseService();
+  late final QuestProvider _questProvider;
   
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late dynamic _quest;
@@ -50,6 +53,8 @@ class _FormScreenState extends State<FormScreen> {
   @override
   void initState() {
     super.initState();
+    _questProvider = Provider.of<QuestProvider>(context, listen: false);
+    
     if (widget.typeAndQuest == null) { return; }
 
     _questType =  widget.typeAndQuest!.entries.first.key;
@@ -142,6 +147,11 @@ class _FormScreenState extends State<FormScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       child: FilledButton(onPressed: _submitForm, child: Text('Save', style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Colors.white))),
                     ),
+                    if (_questType == QuestType.habit && _isEditMode)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text(Texts.textLastTime(_quest.lastDateTime), style: Theme.of(context).textTheme.bodyMedium),
+                      ),
                   ],
                 ),
               ),
@@ -209,10 +219,9 @@ class _FormScreenState extends State<FormScreen> {
     } else if (_questType == QuestType.routine && _quest != null) {
       await _db.clearRoutine(_quest.id);
     }
+    await _questProvider.refreshData(_questType, false);
 
-    if(mounted) {
-      Navigator.pop(context, true);
-    }
+    if(mounted) { Navigator.pop(context, true); }
   }
 
   Future<void> _submitForm() async {
@@ -233,6 +242,8 @@ class _FormScreenState extends State<FormScreen> {
         _isEditMode ? await _updateRoutine() : await _addRoutine();
         break;
     }
+    await _questProvider.refreshData(_questType, _isEditMode);
+
     _formKey.currentState!.reset();
     if (mounted) { Navigator.pop(context, true); }
   }
@@ -245,7 +256,7 @@ class _FormScreenState extends State<FormScreen> {
       _descriptionController.text,
       dueDateTime,
       _priorityController,
-    ),);
+    ));
   }
 
   Future<void> _updateTask() async {
@@ -304,6 +315,7 @@ class _FormScreenState extends State<FormScreen> {
   Future<void> _endRoutine() async {
     _quest.isDone = !_quest.isDone;
     await _db.insertOrUpdateRoutine(_quest);
+    await _questProvider.refreshData(_questType, _isEditMode);
     if (mounted) { Navigator.pop(context, true); }
   }
 }

@@ -62,11 +62,12 @@ class DatabaseService {
     });
   }
 
-  Future<void> incrementHabitCounter(int id) async {
+  Future<void> incrementHabitCounter(int id, DateTime now) async {
     await isar.writeTxn(() async {
       final Habit? habitToUpdate = await isar.habits.filter().idEqualTo(id).findFirst();
       if (habitToUpdate != null) {
         habitToUpdate.counter += 1;
+        habitToUpdate.lastDateTime = now;
         await isar.habits.put(habitToUpdate);
       }
     });

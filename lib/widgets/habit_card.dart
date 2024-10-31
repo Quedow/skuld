@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skuld/models/habit.dart';
+import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/styles.dart';
 
 class HabitCard extends StatelessWidget {
@@ -26,7 +27,7 @@ class HabitCard extends StatelessWidget {
             children: [
               Container(
                 width: 10,
-                height: 52,
+                height: 64,
                 decoration: ShapeDecoration(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(Styles.borderRadius), bottomLeft: Radius.circular(Styles.borderRadius))),
                   color: habit.isGood ? isGoodColor : isNotGoodColor,
@@ -35,7 +36,16 @@ class HabitCard extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Text(habit.title, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 2),
+                        child: Text(habit.title, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge),
+                      ),
+                      Text(Texts.textLastTime(habit.lastDateTime), style: Theme.of(context).textTheme.bodyMedium),
+                    ],
+                  ),
                 ),
               ),
               Padding(

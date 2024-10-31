@@ -5,6 +5,7 @@ import 'package:skuld/screens/habits_screen.dart';
 import 'package:skuld/screens/routines_screen.dart';
 import 'package:skuld/screens/tasks_screen.dart';
 import 'package:skuld/utils/common_text.dart';
+import 'package:skuld/utils/functions.dart';
 
 class QuestsScreen extends StatefulWidget {
   const QuestsScreen({super.key});
@@ -14,7 +15,7 @@ class QuestsScreen extends StatefulWidget {
 }
 
 class _QuestsScreenState extends State<QuestsScreen> {
-  late QuestProvider _questProvider;
+  late final QuestProvider _questProvider;
   final List<Widget> _screens = [];
 
   @override
@@ -56,7 +57,7 @@ class _QuestsScreenState extends State<QuestsScreen> {
             heroTag: UniqueKey(),
             elevation: 2,
             shape: const CircleBorder(),
-            onPressed: () => _questProvider.createOrUpdateTask(context),
+            onPressed: () => Functions.navigateToFormScreen(context),
             child: const Icon(Icons.add_rounded),
           ),
         ),

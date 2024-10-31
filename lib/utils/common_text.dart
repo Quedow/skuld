@@ -1,5 +1,6 @@
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
+import 'package:skuld/utils/functions.dart';
 
 abstract class Texts {
   static String textTitleForm(bool isEditMode, QuestType questType) {
@@ -23,6 +24,10 @@ abstract class Texts {
 
   static String textDoneRate(int value, bool isWeek) {
     return '$value % (${isWeek ? 'WEEK' : 'TODAY'})';
+  }
+
+  static String textLastTime(DateTime? lastDateTime) {
+    return 'Last time: ${lastDateTime != null ? Functions.getDate(lastDateTime) : 'Never'}';
   }
 
   static String textTasksTitle = 'TASKS';

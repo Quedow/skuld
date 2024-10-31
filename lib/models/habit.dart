@@ -10,6 +10,7 @@ class Habit {
   String title;
   String description;
   bool isGood;
+  DateTime? lastDateTime;
   int counter = 0;
 
   Habit(this.title, this.description, this.isGood);
