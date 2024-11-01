@@ -54,7 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           items: deletionFrequencies.entries.map((entry) => DropdownMenuItem<String>(
             value: entry.key,
             child: Text(entry.value, style: Theme.of(context).textTheme.labelLarge),
-          ),).toList(),
+          )).toList(),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
 import 'package:skuld/models/task.dart';
+import 'package:skuld/utils/functions.dart';
 
 class QuestProvider with ChangeNotifier {
   final DatabaseService _db = DatabaseService();
@@ -16,6 +17,23 @@ class QuestProvider with ChangeNotifier {
       _currentScreenIndex = index;
     }
     notifyListeners();
+  }
+
+  Future<void> refreshData(QuestType questType, bool isUpdate) async {
+    switch (questType) {
+      case QuestType.task:
+        await fetchTasks();
+        if (!isUpdate) {
+          await fetchDoneRates();
+        }
+        break;
+      case QuestType.habit:
+        await fetchHabits();
+        break;
+      case QuestType.routine:
+        await fetchRoutines();
+        break;
+    }
   }
 
   // Tasks
@@ -33,17 +51,24 @@ class QuestProvider with ChangeNotifier {
 
   Future<void> completeTask(Task task, bool? value) async {
     final bool state = value ?? task.isDone;
-    await DatabaseService().completeTask(task.id, state);
+    await _db.completeTask(task.id, state);
+    task.isDone = state;
+    if (state) {
+      _tasks.remove(task);
+      _doneTasks.add(task);
+    } else {
+      _doneTasks.remove(task);
+      _tasks.add(task);
+    }
     await fetchDoneRates();
-    await fetchTasks();
   }
-
 
   List<int> _doneRates = [0, 0];
   List<int> get doneRates => _doneRates;
 
   Future<void> fetchDoneRates() async {
     _doneRates = await  _db.getDoneRates();
+    notifyListeners();
   }
 
   // Habits
@@ -76,20 +101,25 @@ class QuestProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> refreshData(QuestType questType, bool isUpdate) async {
-    switch (questType) {
-      case QuestType.task:
-        if (!isUpdate) {
-          await fetchDoneRates();
-        }
-        await fetchTasks();
-        break;
-      case QuestType.habit:
-        await fetchHabits();
-        break;
-      case QuestType.routine:
-        await fetchRoutines();
-        break;
+  Future<void> completeRoutine(Routine routine) async {
+    routine.dueDateTime = Functions.getNextDate(routine.dueDateTime, routine.frequency, routine.period, routine.days);
+    Future.delayed(const Duration(milliseconds: 500), () async {
+      routine.isDone = false;
+      await _db.insertOrUpdateRoutine(routine);
+      notifyListeners();
+    });
+  }
+
+  Future<void> endRoutine(Routine routine) async {
+    routine.isDone = !routine.isDone;
+    await _db.insertOrUpdateRoutine(routine);
+    if (routine.isDone) {
+      _routines.remove(routine);
+      _doneRoutines.add(routine);
+    } else {
+      _doneRoutines.remove(routine);
+      _routines.add(routine);
     }
+    notifyListeners();
   }
 }

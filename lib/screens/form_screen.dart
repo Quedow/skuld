@@ -211,19 +211,6 @@ class _FormScreenState extends State<FormScreen> {
     }
   }
 
-  Future<void> _deleteQuest() async {
-    if (_questType == QuestType.task && _quest != null) {
-      await _db.clearTask(_quest.id);
-    } else if (_questType == QuestType.habit && _quest != null) {
-      await _db.clearHabit(_quest.id);
-    } else if (_questType == QuestType.routine && _quest != null) {
-      await _db.clearRoutine(_quest.id);
-    }
-    await _questProvider.refreshData(_questType, false);
-
-    if(mounted) { Navigator.pop(context, true); }
-  }
-
   Future<void> _submitForm() async {
     FocusScope.of(context).unfocus();
 
@@ -245,7 +232,7 @@ class _FormScreenState extends State<FormScreen> {
     await _questProvider.refreshData(_questType, _isEditMode);
 
     _formKey.currentState!.reset();
-    if (mounted) { Navigator.pop(context, true); }
+    if (mounted) { Navigator.pop(context); }
   }
 
   Future<void> _addTask() async {
@@ -275,7 +262,7 @@ class _FormScreenState extends State<FormScreen> {
       _titleController.text,
       _descriptionController.text,
       _isGoodController,
-    ),);
+    ));
   }
 
   Future<void> _updateHabit() async {
@@ -296,7 +283,7 @@ class _FormScreenState extends State<FormScreen> {
       _periodController,
       _daysController,
       dueDateTime,
-    ),);
+    ));
   }
 
   Future<void> _updateRoutine() async {
@@ -313,9 +300,26 @@ class _FormScreenState extends State<FormScreen> {
   }
 
   Future<void> _endRoutine() async {
-    _quest.isDone = !_quest.isDone;
-    await _db.insertOrUpdateRoutine(_quest);
-    await _questProvider.refreshData(_questType, _isEditMode);
-    if (mounted) { Navigator.pop(context, true); }
+    await _questProvider.endRoutine(_quest);
+    if (mounted) { Navigator.pop(context); }
+  }
+
+  Future<void> _deleteQuest() async {
+    if (_quest != null) {
+      switch (_questType) {
+        case QuestType.task:
+          await _db.clearTask(_quest.id);
+          break;
+        case QuestType.habit:
+          await _db.clearHabit(_quest.id);
+          break;
+        case QuestType.routine:
+          await _db.clearRoutine(_quest.id);
+          break;
+      }
+      await _questProvider.refreshData(_questType, false);
+
+      if(mounted) { Navigator.pop(context); }
+    }
   }
 }

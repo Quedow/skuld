@@ -21,7 +21,7 @@ class DatabaseService {
     isar = await Isar.open(
       [TaskSchema, HabitSchema, RoutineSchema],
       directory: dir.path,
-      inspector: true, // set to false for build
+      inspector: false, // set to false for build
     );
     return isar;
   }

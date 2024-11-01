@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/screens/form_screen.dart';
 import 'package:skuld/screens/habits_screen.dart';
 import 'package:skuld/screens/routines_screen.dart';
 import 'package:skuld/screens/tasks_screen.dart';
 import 'package:skuld/utils/common_text.dart';
-import 'package:skuld/utils/functions.dart';
 
 class QuestsScreen extends StatefulWidget {
   const QuestsScreen({super.key});
@@ -57,11 +57,18 @@ class _QuestsScreenState extends State<QuestsScreen> {
             heroTag: UniqueKey(),
             elevation: 2,
             shape: const CircleBorder(),
-            onPressed: () => Functions.navigateToFormScreen(context),
+            onPressed: () => _navigateToFormScreen(context),
             child: const Icon(Icons.add_rounded),
           ),
         ),
       ],
+    );
+  }
+
+  static Future<void> _navigateToFormScreen(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const FormScreen()),
     );
   }
 }

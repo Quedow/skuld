@@ -18,7 +18,7 @@ class Habit {
 
 const Map<bool, String> isGoodToLabel = {
   true: 'Good Habit',
-  false: 'Bad Habit'
+  false: 'Bad Habit',
 };
 
 const Color isGoodColor = Styles.greenColor;

@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/screens/form_screen.dart';
 import 'package:skuld/utils/common_text.dart';
-import 'package:skuld/utils/functions.dart';
 import 'package:skuld/widgets/task_card.dart';
 
 class TasksScreen extends StatefulWidget {
@@ -86,10 +86,17 @@ class _TasksScreenState extends State<TasksScreen> {
         final Task task = tasks[index];
         return TaskCard(
           task: task,
-          onTap: () => Functions.navigateToFormScreen(context, {QuestType.task: task}),
+          onTap: () => _navigateToFormScreen(context, {QuestType.task: task}),
           onCheck: (value) => _questProvider.completeTask(task, value),
         );
       },
+    );
+  }
+
+  static Future<void> _navigateToFormScreen(BuildContext context, Map<QuestType, Task> typeAndQuest) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: typeAndQuest)),
     );
   }
 }

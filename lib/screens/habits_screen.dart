@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/screens/form_screen.dart';
 import 'package:skuld/utils/common_text.dart';
-import 'package:skuld/utils/functions.dart';
 import 'package:skuld/widgets/habit_card.dart';
 
 class HabitsScreen extends StatefulWidget {
@@ -46,10 +46,17 @@ class _HabitsScreenState extends State<HabitsScreen> {
         Habit habit = habits[index];
         return HabitCard(
           habit: habit,
-          onTap: () => Functions.navigateToFormScreen(context, {QuestType.habit: habit}),
+          onTap: () => _navigateToFormScreen(context, {QuestType.habit: habit}),
           onIncrement: () => _questProvider.incrementHabitCounter(index, habit.id),
         );
       },
+    );
+  }
+
+  static Future<void> _navigateToFormScreen(BuildContext context, Map<QuestType, Habit> typeAndQuest) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: typeAndQuest)),
     );
   }
 }

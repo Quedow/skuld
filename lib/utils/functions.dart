@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:skuld/models/quest.dart';
-import 'package:skuld/screens/form_screen.dart';
 
 abstract class Functions {
   static String getDate(DateTime date) {
@@ -45,12 +42,5 @@ abstract class Functions {
         break;
     }
     return nextDate ?? date;
-  }
-
-  static Future<void> navigateToFormScreen(BuildContext context, [Map<QuestType, dynamic>? typeAndQuest]) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: typeAndQuest)),
-    );
   }
 }

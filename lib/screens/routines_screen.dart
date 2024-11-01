@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
-import 'package:skuld/database/database_service.dart';
 import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/screens/form_screen.dart';
 import 'package:skuld/utils/common_text.dart';
-import 'package:skuld/utils/functions.dart';
 import 'package:skuld/widgets/routine_card.dart';
 
 class RoutinesScreen extends StatefulWidget {
@@ -70,7 +69,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
         Routine routine = routines[index];
         return RoutineCard(
           routine: routine,
-          onTap: () => Functions.navigateToFormScreen(context, {QuestType.routine: routine}),
+          onTap: () => _navigateToFormScreen(context, {QuestType.routine: routine}),
           onCheck: (value) => _completeRoutine(routine),
         );
       },
@@ -84,11 +83,13 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
       routine.isDone = true;
     });
 
-    routine.dueDateTime = Functions.getNextDate(routine.dueDateTime, routine.frequency, routine.period, routine.days);
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      routine.isDone = false;
-      await DatabaseService().insertOrUpdateRoutine(routine);
-      await _questProvider.fetchRoutines();
-    });
+    await _questProvider.completeRoutine(routine);
+  }
+
+  static Future<void> _navigateToFormScreen(BuildContext context, Map<QuestType, Routine> typeAndQuest) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: typeAndQuest)),
+    );
   }
 }
