@@ -80,11 +80,11 @@ class QuestProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> incrementHabitCounter(int index, int habitId) async {
+  Future<void> incrementHabitCounter(Habit habit, int increment) async {
     DateTime now = DateTime.now();
-    await _db.incrementHabitCounter(habitId, now);
-    _habits[index].counter++;
-    _habits[index].lastDateTime = now;
+    habit.counter += increment;
+    habit.lastDateTime = now;
+    await _db.insertOrUpdateHabit(habit);
     notifyListeners();
   }
 
