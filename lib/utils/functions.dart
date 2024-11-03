@@ -3,7 +3,7 @@ import 'package:jiffy/jiffy.dart';
 
 abstract class Functions {
   static String getDate(DateTime date) {
-    return DateFormat('MM/dd/yyyy').format(date);
+    return DateFormat('dd/MM/yyyy').format(date);
   }
 
   static String getTime(DateTime date) {

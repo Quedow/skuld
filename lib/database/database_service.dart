@@ -62,22 +62,24 @@ class DatabaseService {
     });
   }
 
-  Future<List<Task>> getTasks([bool? isDone]) async {
-    return await isar.tasks.where().anyDueDateTime().filter().optional(
-      isDone != null,
-      (task) => task.isDoneEqualTo(isDone!),
-    ).findAll();
+  Future<List<Task>> getTasks(bool isDone) async {
+    var query = isar.tasks.where().anyDueDateTime().filter().isDoneEqualTo(isDone);
+
+    return !isDone
+      ? await query.findAll()
+      : await query.sortByDueDateTimeDesc().findAll();
   }
 
   Future<List<Habit>> getHabits() async {
     return await isar.habits.where().findAll();
   }
 
-  Future<List<Routine>> getRoutines([bool? isDone]) async {
-    return await isar.routines.where().anyDueDateTime().filter().optional(
-      isDone != null,
-      (routine) => routine.isDoneEqualTo(isDone!),
-    ).findAll();
+  Future<List<Routine>> getRoutines(bool isDone) async {
+    var query = isar.routines.where().anyDueDateTime().filter().isDoneEqualTo(isDone);
+
+    return !isDone
+      ? await query.findAll()
+      : await query.sortByDueDateTimeDesc().findAll();
   }
 
   Future<List<int>> getDoneRates() async {

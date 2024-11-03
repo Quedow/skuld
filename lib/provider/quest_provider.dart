@@ -79,9 +79,11 @@ class QuestProvider with ChangeNotifier {
   }
 
   Future<void> incrementHabitCounter(Habit habit, int increment) async {
-    DateTime now = DateTime.now();
     habit.counter += increment;
-    habit.lastDateTime = now;
+    if (increment > 0) {
+      DateTime now = DateTime.now();
+      habit.lastDateTime = now;
+    }
     await _db.insertOrUpdateHabit(habit);
     notifyListeners();
   }
