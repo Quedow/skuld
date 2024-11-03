@@ -19,13 +19,11 @@ class QuestProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> refreshData(QuestType questType, bool isUpdate) async {
+  Future<void> refreshData(QuestType questType) async {
     switch (questType) {
       case QuestType.task:
         await fetchTasks();
-        if (!isUpdate) {
-          await fetchDoneRates();
-        }
+        await fetchDoneRates();
         break;
       case QuestType.habit:
         await fetchHabits();

@@ -189,7 +189,7 @@ class _FormScreenState extends State<FormScreen> {
   Future<void> _selectDate(BuildContext context) async {
       final DateTime? dueDate = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: _dateController,
         firstDate: DateTime(2000),
         lastDate: DateTime(2100),
       );
@@ -202,7 +202,7 @@ class _FormScreenState extends State<FormScreen> {
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? dueTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: _timeController,
       initialEntryMode: TimePickerEntryMode.inputOnly,
     );
 
@@ -229,7 +229,7 @@ class _FormScreenState extends State<FormScreen> {
         _isEditMode ? await _updateRoutine() : await _addRoutine();
         break;
     }
-    await _questProvider.refreshData(_questType, _isEditMode);
+    await _questProvider.refreshData(_questType);
 
     _formKey.currentState!.reset();
     if (mounted) { Navigator.pop(context); }
@@ -317,7 +317,7 @@ class _FormScreenState extends State<FormScreen> {
           await _db.clearRoutine(_quest.id);
           break;
       }
-      await _questProvider.refreshData(_questType, false);
+      await _questProvider.refreshData(_questType);
 
       if(mounted) { Navigator.pop(context); }
     }
