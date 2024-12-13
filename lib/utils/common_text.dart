@@ -28,7 +28,7 @@ abstract class CText {
   static String textLastTime(DateTime? lastDateTime, [bool isLongFormat = false]) {
     if (lastDateTime == null) { return 'Never'; }
     final int dayAgo = DateTime.now().difference(lastDateTime).inDays;
-    String content = dayAgo == 0 ? 'Today' : '$dayAgo ago';
+    String content = dayAgo == 0 ? 'Today' : '$dayAgo days ago';
     
     return isLongFormat ? 'Last activity: $content' : content;
   }
