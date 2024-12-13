@@ -60,7 +60,7 @@ class RoutineCard extends StatelessWidget {
                         Icon(Icons.calendar_today_rounded, size: 15, color: dateTimeColor),
                         Text(Functions.getDate(routine.dueDateTime), style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
                         const Icon(Icons.loop_rounded, size: 15),
-                        Text(Texts.textRoutineDetail(routine.frequency, routine.period), style: Theme.of(context).textTheme.bodyMedium),
+                        Text(CText.textRoutineDetail(routine.frequency, routine.period), style: Theme.of(context).textTheme.bodyMedium),
                       ],
                     ),
                   ],

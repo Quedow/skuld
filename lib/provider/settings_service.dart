@@ -14,6 +14,14 @@ class SettingsService {
     _preferences ??= await SharedPreferences.getInstance();
   }
 
+  Future<void> setNoteContent(String content) async {
+    await _preferences!.setString('note', content);
+  }
+
+  String getNoteContent() {
+    return _preferences!.getString('note') ?? '';
+  }
+
   Future<void> setDeletionFrequency(String value) async {
     await _preferences!.setString('deletionFrequency', value);
   }
@@ -23,6 +31,6 @@ class SettingsService {
   }
 
   Future<void> clearSettings() async {
-    await _preferences!.clear();
+    await _preferences!.remove('deletionFrequency');
   }
 }

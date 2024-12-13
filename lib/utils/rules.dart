@@ -7,7 +7,7 @@ abstract class Rules {
 
   static String? isNotEmpty(String? value) {
     if (value == null || value.isEmpty) {
-      return Texts.errorRequiredRule;
+      return CText.errorRequiredRule;
     }
     return null;
   }
@@ -17,7 +17,7 @@ abstract class Rules {
     if (isNull != null) {
       return isNull;
     } else if (int.tryParse(value!) == null) {
-      return Texts.errorIntegerRule;
+      return CText.errorIntegerRule;
     }
     return null;
   }

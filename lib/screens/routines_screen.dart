@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
 import 'package:skuld/provider/quest_provider.dart';
-import 'package:skuld/screens/form_screen.dart';
+import 'package:skuld/pages/form_page.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/widgets/routine_card.dart';
 
@@ -44,7 +44,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                     padding: WidgetStatePropertyAll(EdgeInsets.zero),
                     overlayColor: WidgetStatePropertyAll(Colors.transparent),
                   ),
-                  label: Text(Texts.textDoneRoutinesBtn, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
+                  label: Text(CText.textDoneRoutinesBtn, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
                   icon: Icon(_displayDoneRoutines ? Icons.keyboard_arrow_down_rounded : Icons.keyboard_arrow_right_rounded),
                 ),
               ),
@@ -60,7 +60,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
   Widget _routineList(List<Routine> routines) {
     if (routines.isEmpty) {
       return SliverToBoxAdapter(
-        child: Center(child: Text(Texts.textNoRoutine, style: Theme.of(context).textTheme.bodyLarge)),
+        child: Center(child: Text(CText.textNoRoutine, style: Theme.of(context).textTheme.bodyLarge)),
       );
     }
     return SliverList.builder(
@@ -89,7 +89,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
   static Future<void> _navigateToFormScreen(BuildContext context, Map<QuestType, Routine> typeAndQuest) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: typeAndQuest)),
+      MaterialPageRoute(builder: (context) => FormPage(typeAndQuest: typeAndQuest)),
     );
   }
 }

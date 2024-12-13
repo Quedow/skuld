@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:skuld/pages/note_page.dart';
 import 'package:skuld/provider/settings_service.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/widgets/alerts.dart';
+import 'package:skuld/widgets/components.dart';
 
 class SettingsScreen extends StatefulWidget {
 
@@ -32,40 +34,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        const Divider(height: 1, thickness: 1),
-        _settingDropdown(Texts.textDeletionFrequency, Texts.textDeletionFrequencyContent, _deletionFrequency, _setDeletionFrequency),
-        const Divider(height: 1, thickness: 1),
-        _settingIconButton(Texts.textDeletePrefs, Texts.textDeletePrefsContent, Icons.delete_rounded, () => Alerts.deletionDialog(context, _settings.clearSettings)),
-        const Divider(height: 1, thickness: 1),
-      ],
-    );
-  }
-
-  ListTile _settingDropdown(String label, String description, String value, void Function(String?)? onChanged) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-      title: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-      subtitle: Text(description, style: Theme.of(context).textTheme.bodySmall),
-      trailing: IntrinsicWidth(
-        child: DropdownButtonFormField<String>(
-          value: value,
-          decoration: const InputDecoration(labelText: 'Frequency'),
-          onChanged: onChanged,
-          items: deletionFrequencies.entries.map((entry) => DropdownMenuItem<String>(
-            value: entry.key,
-            child: Text(entry.value, style: Theme.of(context).textTheme.labelLarge),
-          )).toList(),
+        TileDropdown(
+          label: CText.textDeletionFrequency,
+          dropdownLabel: CText.textDropdownFrequency,
+          description: CText.textDeletionFrequencyContent,
+          value: _deletionFrequency,
+          options: deletionFrequencies,
+          onChanged: _setDeletionFrequency,
         ),
-      ),
-    );
-  }
-
-  ListTile _settingIconButton(String label, String description, IconData icon, void Function() onPressed) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-      title: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-      subtitle: Text(description, style: Theme.of(context).textTheme.bodySmall),
-      trailing: IconButton(onPressed: onPressed, icon: Icon(icon)),
+        TileIconButton(
+          label: CText.textDeletePrefs,
+          description: CText.textDeletePrefsContent,
+          icon: Icons.delete_rounded,
+          onPressed: () => Alerts.deletionDialog(context, _settings.clearSettings),
+        ),
+        TileButton(label: CText.textNote, icon: Icons.edit_rounded, onPressed: _openNotePage),
+      ],
     );
   }
 
@@ -73,5 +57,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (value != null) {
       _settings.setDeletionFrequency(value);
     }
+  }
+
+  void _openNotePage() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const NotePage()));
   }
 }

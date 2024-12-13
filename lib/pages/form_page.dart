@@ -12,16 +12,16 @@ import 'package:skuld/utils/rules.dart';
 import 'package:skuld/widgets/alerts.dart';
 import 'package:skuld/widgets/form_components.dart';
 
-class FormScreen extends StatefulWidget {
+class FormPage extends StatefulWidget {
   final Map<QuestType, dynamic>? typeAndQuest;
 
-  const FormScreen({super.key, this.typeAndQuest});
+  const FormPage({super.key, this.typeAndQuest});
 
   @override
-  State<FormScreen> createState() => _FormScreenState();
+  State<FormPage> createState() => _FormPageState();
 }
 
-class _FormScreenState extends State<FormScreen> {
+class _FormPageState extends State<FormPage> {
   final DatabaseService _db = DatabaseService();
   late final QuestProvider _questProvider;
   
@@ -63,6 +63,14 @@ class _FormScreenState extends State<FormScreen> {
     if (_quest == null) { return; }
 
     _tryLoadQuest();
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _frequencyController.dispose();
+    super.dispose();
   }
 
   dynamic _tryCast(dynamic quest) {
@@ -113,18 +121,10 @@ class _FormScreenState extends State<FormScreen> {
   }
 
   @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _frequencyController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(Texts.textTitleForm(_isEditMode, _questType), style: Theme.of(context).textTheme.titleLarge),
+        title: Text(CText.textTitleForm(_isEditMode, _questType), style: Theme.of(context).textTheme.titleLarge),
         actions: _isEditMode ? [
           IconButton(onPressed: () => Alerts.deletionDialog(context, _deleteQuest), icon: const Icon(Icons.delete_rounded)),
         ] : null,
@@ -150,7 +150,7 @@ class _FormScreenState extends State<FormScreen> {
                     if (_questType == QuestType.habit && _isEditMode)
                       Padding(
                         padding: const EdgeInsets.only(top: 10),
-                        child: Text(Texts.textLastTime(_quest.lastDateTime), style: Theme.of(context).textTheme.bodyMedium),
+                        child: Text(CText.textLastTime(_quest.lastDateTime, true), style: Theme.of(context).textTheme.bodyMedium),
                       ),
                   ],
                 ),
@@ -180,7 +180,7 @@ class _FormScreenState extends State<FormScreen> {
           if (_isEditMode)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
-              child: OutlinedButton(onPressed: _endRoutine, child: Text(Texts.textEndRoutine(_quest.isDone), style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).colorScheme.primary))),
+              child: OutlinedButton(onPressed: _endRoutine, child: Text(CText.textEndRoutine(_quest.isDone), style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).colorScheme.primary))),
             ),
         ];
     }

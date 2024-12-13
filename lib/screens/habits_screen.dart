@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/provider/quest_provider.dart';
-import 'package:skuld/screens/form_screen.dart';
+import 'package:skuld/pages/form_page.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/widgets/habit_card.dart';
 
@@ -38,7 +38,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
 
   Widget _habitList(List<Habit> habits) {
     if (habits.isEmpty) {
-      return Center(child: Text(Texts.textNoHabit, style: Theme.of(context).textTheme.bodyLarge));
+      return Center(child: Text(CText.textNoHabit, style: Theme.of(context).textTheme.bodyLarge));
     }
     return ListView.builder(
       itemCount: habits.length,
@@ -57,7 +57,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
   static Future<void> _navigateToFormScreen(BuildContext context, Map<QuestType, Habit> typeAndQuest) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: typeAndQuest)),
+      MaterialPageRoute(builder: (context) => FormPage(typeAndQuest: typeAndQuest)),
     );
   }
 }

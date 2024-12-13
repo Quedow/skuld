@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skuld/provider/quest_provider.dart';
-import 'package:skuld/screens/form_screen.dart';
+import 'package:skuld/pages/form_page.dart';
 import 'package:skuld/screens/habits_screen.dart';
 import 'package:skuld/screens/routines_screen.dart';
 import 'package:skuld/screens/tasks_screen.dart';
@@ -42,9 +42,9 @@ class _QuestsScreenState extends State<QuestsScreen> {
               toolbarHeight: 0,
               bottom: TabBar(
                 tabs: [
-                  Tab(icon: const Icon(Icons.checklist_rounded), text: Texts.textTasksTitle),
-                  Tab(icon: const Icon(Icons.psychology_rounded), text: Texts.textHabitTitle),
-                  Tab(icon: const Icon(Icons.loop_rounded), text: Texts.textRoutinesTitle),
+                  Tab(icon: const Icon(Icons.checklist_rounded), text: CText.textTasksTitle),
+                  Tab(icon: const Icon(Icons.psychology_rounded), text: CText.textHabitTitle),
+                  Tab(icon: const Icon(Icons.loop_rounded), text: CText.textRoutinesTitle),
                 ],
               ),
             ),
@@ -68,7 +68,7 @@ class _QuestsScreenState extends State<QuestsScreen> {
   static Future<void> _navigateToFormScreen(BuildContext context) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const FormScreen()),
+      MaterialPageRoute(builder: (context) => const FormPage()),
     );
   }
 }

@@ -44,7 +44,7 @@ class HabitCard extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 2),
                         child: Text(habit.title, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge),
                       ),
-                      Text(Texts.textLastTime(habit.lastDateTime), style: Theme.of(context).textTheme.bodyMedium),
+                      Text(CText.textLastTime(habit.lastDateTime), style: Theme.of(context).textTheme.bodyMedium),
                     ],
                   ),
                 ),

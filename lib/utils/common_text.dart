@@ -1,8 +1,7 @@
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
-import 'package:skuld/utils/functions.dart';
 
-abstract class Texts {
+abstract class CText {
   static String textTitleForm(bool isEditMode, QuestType questType) {
     switch (questType) {
       case QuestType.task:
@@ -26,27 +25,42 @@ abstract class Texts {
     return '$value % (${isWeek ? 'WEEK' : 'TODAY'})';
   }
 
-  static String textLastTime(DateTime? lastDateTime) {
-    return 'Last time: ${lastDateTime != null ? Functions.getDate(lastDateTime) : 'Never'}';
+  static String textLastTime(DateTime? lastDateTime, [bool isLongFormat = false]) {
+    if (lastDateTime == null) { return 'Never'; }
+    final int dayAgo = DateTime.now().difference(lastDateTime).inDays;
+    String content = dayAgo == 0 ? 'Today' : '$dayAgo ago';
+    
+    return isLongFormat ? 'Last activity: $content' : content;
   }
 
+  // Tasks
   static String textTasksTitle = 'TASKS';
   static String textDoneTasksBtn = 'DONE TASKS';
   static String textNoTask = '🤔 No task for now...';
 
+ // Habits
   static String textHabitTitle = 'HABITS';
   static String textNoHabit = '🤔 No task for now...';
 
+ // Routines
   static String textRoutinesTitle = 'ROUTINES';
   static String textDoneRoutinesBtn = 'ENDED ROUTINES';
   static String textNoRoutine = '🤔 No routines for now...';
 
+  // Popup
   static String textDeletionDialog = 'Do you confirm the deletion?';
-
+  
+  // Settings
+  static String textDropdownFrequency = 'Frequency';
   static String textDeletionFrequency = 'Deletion frequency';
   static String textDeletionFrequencyContent = 'Quests with due date prior to the selected setting will be deleted.';
   static String textDeletePrefs = 'Delete preferences';
   static String textDeletePrefsContent = 'Preference settings will be reset default values.';
+
+  // Note
+  static String textNote = 'Note';
+  static String textNoteLabel = 'Inspiration starts here...';
+  static String textNoteSaved = 'Your note has been saved';
 
   // Errors
   static String errorLoadingTasks = 'Error when loading tasks';

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/provider/quest_provider.dart';
-import 'package:skuld/screens/form_screen.dart';
+import 'package:skuld/pages/form_page.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/widgets/task_card.dart';
 
@@ -45,7 +45,7 @@ class _TasksScreenState extends State<TasksScreen> {
                     valueListenable: _rateIndex,
                     builder: (context, rateIndex, _) => GestureDetector(
                       onTap: () => _rateIndex.value = (rateIndex + 1) % questProvider.doneRates.length,
-                      child: Text(Texts.textDoneRate(questProvider.doneRates[rateIndex], rateIndex == 1), style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
+                      child: Text(CText.textDoneRate(questProvider.doneRates[rateIndex], rateIndex == 1), style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
                     ),
                   ),
                 ),
@@ -61,7 +61,7 @@ class _TasksScreenState extends State<TasksScreen> {
                     padding: WidgetStatePropertyAll(EdgeInsets.zero),
                     overlayColor: WidgetStatePropertyAll(Colors.transparent),
                   ),
-                  label: Text(Texts.textDoneTasksBtn, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
+                  label: Text(CText.textDoneTasksBtn, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)),
                   icon: Icon(_displayDoneTasks ? Icons.keyboard_arrow_down_rounded : Icons.keyboard_arrow_right_rounded),
                 ),
               ),
@@ -77,7 +77,7 @@ class _TasksScreenState extends State<TasksScreen> {
   Widget _taskList(List<Task> tasks) {
     if (tasks.isEmpty) {
       return SliverToBoxAdapter(
-        child: Center(child: Text(Texts.textNoTask, style: Theme.of(context).textTheme.bodyLarge)),
+        child: Center(child: Text(CText.textNoTask, style: Theme.of(context).textTheme.bodyLarge)),
       );
     }
     return SliverList.builder(
@@ -96,7 +96,7 @@ class _TasksScreenState extends State<TasksScreen> {
   static Future<void> _navigateToFormScreen(BuildContext context, Map<QuestType, Task> typeAndQuest) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FormScreen(typeAndQuest: typeAndQuest)),
+      MaterialPageRoute(builder: (context) => FormPage(typeAndQuest: typeAndQuest)),
     );
   }
 }

@@ -8,7 +8,7 @@ abstract class Alerts {
       builder: (BuildContext context) {
         return AlertDialog(
           actionsAlignment: MainAxisAlignment.spaceAround,
-          title: Text(Texts.textDeletionDialog, style: Theme.of(context).textTheme.titleLarge),
+          title: Text(CText.textDeletionDialog, style: Theme.of(context).textTheme.titleLarge),
           actions: [
             IconButton(icon: Icon(Icons.cancel_rounded, color: Theme.of(context).colorScheme.error),
               onPressed: () async {

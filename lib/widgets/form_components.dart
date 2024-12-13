@@ -63,7 +63,7 @@ class IconSelector extends StatelessWidget {
         padding: const EdgeInsets.only(left: 20, right: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Theme.of(context).hintColor),
+          border: Border.all(color: Theme.of(context).hintColor, width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,7 +135,7 @@ class FrequencySelector extends StatelessWidget {
         padding: const EdgeInsets.only(left: 20, right: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Theme.of(context).hintColor),
+          border: Border.all(color: Theme.of(context).hintColor, width: 1),
         ),
         child: Column(
           children: [
