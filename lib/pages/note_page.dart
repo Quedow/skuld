@@ -67,7 +67,7 @@ class _NotePageState extends State<NotePage> {
         content: Text(CText.textNoteSaved),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        duration: const Duration(milliseconds: 3000),
+        duration: const Duration(milliseconds: 2000),
       ),
     );
   }
