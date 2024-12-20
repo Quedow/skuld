@@ -25,18 +25,19 @@ abstract class CText {
     return '$value % (${isWeek ? 'WEEK' : 'TODAY'})';
   }
 
-static String textLastTime(DateTime? lastDateTime, [bool isLongFormat = false]) {
-  if (lastDateTime == null) return 'Never';
-  final int daysAgo = DateTime.now().difference(lastDateTime).inDays;
-  final String content = switch (daysAgo) {
-    0 => 'Today',
-    1 => '1 day ago',
-    _ => '$daysAgo days ago',
-  };
+  static String textLastTime(DateTime? lastDateTime, [bool isLongFormat = false]) {
+    if (lastDateTime == null) return 'Never';
+    final DateTime now = DateTime.now();
+    final int daysAgo = DateTime(now.year, now.month, now.day)
+      .difference(DateTime(lastDateTime.year, lastDateTime.month, lastDateTime.day)).inDays;
+    final String content = switch (daysAgo) {
+      0 => 'Today',
+      1 => '1 day ago',
+      _ => '$daysAgo days ago',
+    };
 
-  return isLongFormat ? 'Last activity: $content' : content;
-}
-
+    return isLongFormat ? 'Last activity: $content' : content;
+  }
 
   // Tasks
   static String textTasksTitle = 'TASKS';
