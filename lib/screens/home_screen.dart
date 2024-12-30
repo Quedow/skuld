@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/screens/game_screen.dart';
 import 'package:skuld/screens/quests_screen.dart';
 import 'package:skuld/screens/settings_screen.dart';
 
@@ -13,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = const [
+    GameScreen(),
     QuestsScreen(),
     SettingsScreen(),
   ];
@@ -36,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
           unselectedFontSize: 14,
           onTap: questProvider.updateScreenIndex,
           items:  const [
+            BottomNavigationBarItem(label: 'Game', icon: Icon(Icons.videogame_asset_rounded)),
             BottomNavigationBarItem(label: 'Quests', icon: Icon(Icons.checklist_rounded)),
             BottomNavigationBarItem(label: 'Settings', icon: Icon(Icons.settings_rounded)),
           ],

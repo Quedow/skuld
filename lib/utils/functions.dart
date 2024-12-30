@@ -10,6 +10,14 @@ abstract class Functions {
     return DateFormat('HH:mm').format(date);
   }
 
+  static int getMaxHp(int level) {
+    return 100 + level * 20;
+  }
+
+  static int getTargetXp(int level) {
+    return level == 0 ? 50 : level * 100;
+  }
+
   static T? tryCast<T>(dynamic x) => x is T ? x : null;
 
   static DateTime getNextDate(DateTime date, int frequency, String period, List<int> days) {

@@ -13,6 +13,7 @@ class Task {
   DateTime dueDateTime;
   int priority;
   bool isDone = false;
+  bool isReclaimed = false;
 
   Task(this.title, this.description, this.dueDateTime, this.priority);
 }

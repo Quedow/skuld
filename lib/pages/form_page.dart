@@ -187,17 +187,17 @@ class _FormPageState extends State<FormPage> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-      final DateTime? dueDate = await showDatePicker(
-        context: context,
-        initialDate: _dateController,
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100),
-      );
+    final DateTime? dueDate = await showDatePicker(
+      context: context,
+      initialDate: _dateController,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
 
-      if (dueDate != null && dueDate != _dateController) {
-        setState(() => _dateController = dueDate);
-      }
+    if (dueDate != null && dueDate != _dateController) {
+      setState(() => _dateController = dueDate);
     }
+  }
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? dueTime = await showTimePicker(

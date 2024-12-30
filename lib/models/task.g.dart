@@ -32,13 +32,18 @@ const TaskSchema = CollectionSchema(
       name: r'isDone',
       type: IsarType.bool,
     ),
-    r'priority': PropertySchema(
+    r'isReclaimed': PropertySchema(
       id: 3,
+      name: r'isReclaimed',
+      type: IsarType.bool,
+    ),
+    r'priority': PropertySchema(
+      id: 4,
       name: r'priority',
       type: IsarType.long,
     ),
     r'title': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'title',
       type: IsarType.string,
     )
@@ -91,8 +96,9 @@ void _taskSerialize(
   writer.writeString(offsets[0], object.description);
   writer.writeDateTime(offsets[1], object.dueDateTime);
   writer.writeBool(offsets[2], object.isDone);
-  writer.writeLong(offsets[3], object.priority);
-  writer.writeString(offsets[4], object.title);
+  writer.writeBool(offsets[3], object.isReclaimed);
+  writer.writeLong(offsets[4], object.priority);
+  writer.writeString(offsets[5], object.title);
 }
 
 Task _taskDeserialize(
@@ -102,13 +108,14 @@ Task _taskDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Task(
-    reader.readString(offsets[4]),
+    reader.readString(offsets[5]),
     reader.readString(offsets[0]),
     reader.readDateTime(offsets[1]),
-    reader.readLong(offsets[3]),
+    reader.readLong(offsets[4]),
   );
   object.id = id;
   object.isDone = reader.readBool(offsets[2]);
+  object.isReclaimed = reader.readBool(offsets[3]);
   return object;
 }
 
@@ -126,8 +133,10 @@ P _taskDeserializeProp<P>(
     case 2:
       return (reader.readBool(offset)) as P;
     case 3:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 4:
+      return (reader.readLong(offset)) as P;
+    case 5:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -564,6 +573,16 @@ extension TaskQueryFilter on QueryBuilder<Task, Task, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterFilterCondition> isReclaimedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isReclaimed',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterFilterCondition> priorityEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -786,6 +805,18 @@ extension TaskQuerySortBy on QueryBuilder<Task, Task, QSortBy> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterSortBy> sortByIsReclaimed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReclaimed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> sortByIsReclaimedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReclaimed', Sort.desc);
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterSortBy> sortByPriority() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'priority', Sort.asc);
@@ -860,6 +891,18 @@ extension TaskQuerySortThenBy on QueryBuilder<Task, Task, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Task, Task, QAfterSortBy> thenByIsReclaimed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReclaimed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Task, Task, QAfterSortBy> thenByIsReclaimedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReclaimed', Sort.desc);
+    });
+  }
+
   QueryBuilder<Task, Task, QAfterSortBy> thenByPriority() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'priority', Sort.asc);
@@ -905,6 +948,12 @@ extension TaskQueryWhereDistinct on QueryBuilder<Task, Task, QDistinct> {
     });
   }
 
+  QueryBuilder<Task, Task, QDistinct> distinctByIsReclaimed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isReclaimed');
+    });
+  }
+
   QueryBuilder<Task, Task, QDistinct> distinctByPriority() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'priority');
@@ -941,6 +990,12 @@ extension TaskQueryProperty on QueryBuilder<Task, Task, QQueryProperty> {
   QueryBuilder<Task, bool, QQueryOperations> isDoneProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isDone');
+    });
+  }
+
+  QueryBuilder<Task, bool, QQueryOperations> isReclaimedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isReclaimed');
     });
   }
 

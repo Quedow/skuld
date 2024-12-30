@@ -7,9 +7,8 @@ class HabitCard extends StatelessWidget {
   final Habit habit;
   final void Function()? onTap;
   final void Function()? onIncrement;
-  final void Function()? onDecrement;
   
-  const HabitCard({super.key, required this.habit, required this.onTap, required this.onIncrement, required this.onDecrement});
+  const HabitCard({super.key, required this.habit, required this.onTap, required this.onIncrement});
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +47,6 @@ class HabitCard extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-              IconButton(
-                onPressed: onDecrement,
-                icon: const Icon(Icons.remove_rounded),
               ),
               Text(habit.counter.toString(), style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: counterColor)),
               IconButton(

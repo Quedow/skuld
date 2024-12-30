@@ -9,7 +9,7 @@ import 'package:skuld/utils/functions.dart';
 class QuestProvider with ChangeNotifier {
   final DatabaseService _db = DatabaseService();
 
-  int _currentScreenIndex = 0;
+  int _currentScreenIndex = 1;
   int get currentScreenIndex => _currentScreenIndex;
 
   void updateScreenIndex(int index) {
@@ -49,8 +49,8 @@ class QuestProvider with ChangeNotifier {
 
   Future<void> completeTask(Task task, bool? value) async {
     final bool state = value ?? task.isDone;
-    await _db.completeTask(task.id, state);
     task.isDone = state;
+    await _db.completeTask(task);
     if (state) {
       _tasks.remove(task);
       _doneTasks.add(task);
@@ -79,13 +79,11 @@ class QuestProvider with ChangeNotifier {
   }
 
   Future<void> incrementHabitCounter(Habit habit, int increment) async {
-    habit.counter += increment;
-    if (increment > 0) {
-      DateTime now = DateTime.now();
-      habit.lastDateTime = now;
+    if (habit.counter + increment >= 0 && increment != 0) {
+      await _db.incrementHabitCounter(habit.id, increment);
+      habit.counter += increment;
+      notifyListeners();
     }
-    await _db.insertOrUpdateHabit(habit);
-    notifyListeners();
   }
 
   // Routines
@@ -105,7 +103,7 @@ class QuestProvider with ChangeNotifier {
     routine.dueDateTime = Functions.getNextDate(routine.dueDateTime, routine.frequency, routine.period, routine.days);
     Future.delayed(const Duration(milliseconds: 500), () async {
       routine.isDone = false;
-      await _db.insertOrUpdateRoutine(routine);
+      await _db.completeRoutine(routine);
       notifyListeners();
     });
   }

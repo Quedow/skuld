@@ -48,7 +48,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
           habit: habit,
           onTap: () => _navigateToFormScreen(context, {QuestType.habit: habit}),
           onIncrement: () => _questProvider.incrementHabitCounter(habit, 1),
-          onDecrement: () => _questProvider.incrementHabitCounter(habit, -1),
         );
       },
     );

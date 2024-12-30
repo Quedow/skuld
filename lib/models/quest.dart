@@ -1,7 +1,7 @@
 enum QuestType {
   task,
   habit,
-  routine
+  routine,
 }
 
 const Map<QuestType, String> questToLabel = {

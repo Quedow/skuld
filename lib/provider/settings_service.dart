@@ -30,6 +30,14 @@ class SettingsService {
     return _preferences!.getString('deletionFrequency') ?? '1m';
   }
 
+  Future<void> setVersion(int version) async {
+    await _preferences!.setInt('version', version);
+  }
+
+  int getVersion() {
+    return _preferences!.getInt('version') ?? 2;
+  }
+
   Future<void> clearSettings() async {
     await _preferences!.remove('deletionFrequency');
   }

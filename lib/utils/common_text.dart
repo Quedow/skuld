@@ -69,8 +69,9 @@ abstract class CText {
   static String textNoteSaved = 'Your note has been saved';
 
   // Errors
-  static String errorLoadingTasks = 'Error when loading tasks';
-  static String errorLoadingHabits = 'Error when loading habits';
+  static String errorLoadingTasks = 'Error when loading tasks'; // Not used
+  static String errorLoadingHabits = 'Error when loading habits'; // Not used
+  static String errorLoadingPlayer = 'ERROR WHEN LOADING PLAYER STATS';
 
   // Rules
   static String errorRequiredRule = 'This filed cannot be empty';
