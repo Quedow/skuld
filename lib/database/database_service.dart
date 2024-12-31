@@ -129,12 +129,12 @@ class DatabaseService {
     });
   }
 
-  Future<void> incrementHabitCounter(int id, int increment) async {
-    final Habit? habitToUpdate = await isar.habits.filter().idEqualTo(id).findFirst();
+  Future<void> incrementHabitCounter(Habit habit, bool isIncrement) async {
+    final Habit? habitToUpdate = await isar.habits.filter().idEqualTo(habit.id).findFirst();
 
     if (habitToUpdate == null) return;
 
-    if (increment > 0) {
+    if (isIncrement) {
       if (habitToUpdate.isGood) {
         await updatePlayer(credits: 1, xp: 5);
       } else {
@@ -143,9 +143,9 @@ class DatabaseService {
     }
 
     await isar.writeTxn(() async {
-      habitToUpdate.counter += increment;
-      if (increment > 0) {
-        habitToUpdate.lastDateTime = DateTime.now();
+      habitToUpdate.counter = habit.counter;
+      if (isIncrement) {
+        habitToUpdate.lastDateTime = habit.lastDateTime;
       }
       await isar.habits.put(habitToUpdate);
     });
