@@ -182,6 +182,7 @@ class DatabaseService {
         routineToUpdate.period = routine.period;
         routineToUpdate.days = routine.days;
         routineToUpdate.dueDateTime = routine.dueDateTime;
+        routineToUpdate.isDone = routine.isDone;
         await isar.routines.put(routineToUpdate);
       } else {
         await isar.routines.put(routine);
