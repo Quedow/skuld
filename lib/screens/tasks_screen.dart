@@ -19,7 +19,7 @@ class TasksScreen extends StatefulWidget {
 class _TasksScreenState extends State<TasksScreen> {
   late final QuestProvider _questProvider;
   bool _displayDoneTasks = false;
- final ValueNotifier<int> _rateIndex = ValueNotifier(0);
+  final ValueNotifier<int> _rateIndex = ValueNotifier(0);
 
   @override
   void initState() {

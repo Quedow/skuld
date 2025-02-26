@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:skuld/provider/quest_provider.dart';
 import 'package:skuld/pages/form_page.dart';
 import 'package:skuld/screens/habits_screen.dart';
@@ -8,7 +7,9 @@ import 'package:skuld/screens/tasks_screen.dart';
 import 'package:skuld/utils/common_text.dart';
 
 class QuestsScreen extends StatefulWidget {
-  const QuestsScreen({super.key});
+  final QuestProvider questProvider;
+
+  const QuestsScreen({super.key, required this.questProvider});
 
   @override
   State<QuestsScreen> createState() => _QuestsScreenState();
@@ -21,7 +22,7 @@ class _QuestsScreenState extends State<QuestsScreen> {
   @override
   void initState() {
     super.initState();
-    _questProvider = Provider.of<QuestProvider>(context, listen: false);
+    _questProvider = widget.questProvider;
     _screens.addAll([
       TasksScreen(questProvider: _questProvider),
       HabitsScreen(questProvider: _questProvider),

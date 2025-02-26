@@ -1,6 +1,7 @@
 import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
 import 'package:skuld/utils/rules.dart';
+import 'package:skuld/utils/styles.dart';
 
 class SegmentedButtonQuest<T> extends StatelessWidget {
   final T selectedValue;
@@ -62,7 +63,7 @@ class IconSelector extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.only(left: 20, right: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(Styles.borderRadius),
           border: Border.all(color: Theme.of(context).hintColor, width: 1),
         ),
         child: Row(
@@ -134,7 +135,7 @@ class FrequencySelector extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.only(left: 20, right: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(Styles.borderRadius),
           border: Border.all(color: Theme.of(context).hintColor, width: 1),
         ),
         child: Column(

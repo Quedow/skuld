@@ -13,11 +13,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Widget> _screens = const [
-    GameScreen(),
-    QuestsScreen(),
-    SettingsScreen(),
-  ];
+  late final QuestProvider _questProvider;
+  final List<Widget> _screens = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _questProvider = Provider.of<QuestProvider>(context, listen: false);
+    _screens.addAll([
+      GameScreen(questProvider: _questProvider),
+      QuestsScreen(questProvider: _questProvider),
+      const SettingsScreen(),
+    ]);
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -42,13 +42,18 @@ const RoutineSchema = CollectionSchema(
       name: r'isDone',
       type: IsarType.bool,
     ),
-    r'period': PropertySchema(
+    r'lastDueDateTime': PropertySchema(
       id: 5,
+      name: r'lastDueDateTime',
+      type: IsarType.dateTime,
+    ),
+    r'period': PropertySchema(
+      id: 6,
       name: r'period',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'title',
       type: IsarType.string,
     )
@@ -105,8 +110,9 @@ void _routineSerialize(
   writer.writeDateTime(offsets[2], object.dueDateTime);
   writer.writeLong(offsets[3], object.frequency);
   writer.writeBool(offsets[4], object.isDone);
-  writer.writeString(offsets[5], object.period);
-  writer.writeString(offsets[6], object.title);
+  writer.writeDateTime(offsets[5], object.lastDueDateTime);
+  writer.writeString(offsets[6], object.period);
+  writer.writeString(offsets[7], object.title);
 }
 
 Routine _routineDeserialize(
@@ -116,15 +122,16 @@ Routine _routineDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Routine(
-    reader.readString(offsets[6]),
+    reader.readString(offsets[7]),
     reader.readString(offsets[1]),
     reader.readLong(offsets[3]),
-    reader.readString(offsets[5]),
+    reader.readString(offsets[6]),
     reader.readLongList(offsets[0]) ?? [],
     reader.readDateTime(offsets[2]),
   );
   object.id = id;
   object.isDone = reader.readBool(offsets[4]);
+  object.lastDueDateTime = reader.readDateTimeOrNull(offsets[5]);
   return object;
 }
 
@@ -146,8 +153,10 @@ P _routineDeserializeProp<P>(
     case 4:
       return (reader.readBool(offset)) as P;
     case 5:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 6:
+      return (reader.readString(offset)) as P;
+    case 7:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -777,6 +786,78 @@ extension RoutineQueryFilter
     });
   }
 
+  QueryBuilder<Routine, Routine, QAfterFilterCondition>
+      lastDueDateTimeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastDueDateTime',
+      ));
+    });
+  }
+
+  QueryBuilder<Routine, Routine, QAfterFilterCondition>
+      lastDueDateTimeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastDueDateTime',
+      ));
+    });
+  }
+
+  QueryBuilder<Routine, Routine, QAfterFilterCondition> lastDueDateTimeEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastDueDateTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Routine, Routine, QAfterFilterCondition>
+      lastDueDateTimeGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastDueDateTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Routine, Routine, QAfterFilterCondition> lastDueDateTimeLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastDueDateTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Routine, Routine, QAfterFilterCondition> lastDueDateTimeBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastDueDateTime',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Routine, Routine, QAfterFilterCondition> periodEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -1093,6 +1174,18 @@ extension RoutineQuerySortBy on QueryBuilder<Routine, Routine, QSortBy> {
     });
   }
 
+  QueryBuilder<Routine, Routine, QAfterSortBy> sortByLastDueDateTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastDueDateTime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Routine, Routine, QAfterSortBy> sortByLastDueDateTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastDueDateTime', Sort.desc);
+    });
+  }
+
   QueryBuilder<Routine, Routine, QAfterSortBy> sortByPeriod() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'period', Sort.asc);
@@ -1180,6 +1273,18 @@ extension RoutineQuerySortThenBy
     });
   }
 
+  QueryBuilder<Routine, Routine, QAfterSortBy> thenByLastDueDateTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastDueDateTime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Routine, Routine, QAfterSortBy> thenByLastDueDateTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastDueDateTime', Sort.desc);
+    });
+  }
+
   QueryBuilder<Routine, Routine, QAfterSortBy> thenByPeriod() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'period', Sort.asc);
@@ -1238,6 +1343,12 @@ extension RoutineQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Routine, Routine, QDistinct> distinctByLastDueDateTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastDueDateTime');
+    });
+  }
+
   QueryBuilder<Routine, Routine, QDistinct> distinctByPeriod(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1288,6 +1399,12 @@ extension RoutineQueryProperty
   QueryBuilder<Routine, bool, QQueryOperations> isDoneProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isDone');
+    });
+  }
+
+  QueryBuilder<Routine, DateTime?, QQueryOperations> lastDueDateTimeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastDueDateTime');
     });
   }
 

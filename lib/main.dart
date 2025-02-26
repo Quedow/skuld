@@ -1,4 +1,4 @@
-import 'package:flame/game.dart';
+// import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -48,9 +48,9 @@ class MyGameApp extends StatelessWidget {
   }
 }
 
-class MyGame extends FlameGame {
+/* class MyGame extends FlameGame {
   @override
   Future<void> onLoad() async {
     // Add your game logic here if needed
   }
-}
+} */

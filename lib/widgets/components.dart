@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:skuld/database/database_service.dart';
+import 'package:skuld/models/player.dart';
+import 'package:skuld/models/quest.dart';
+import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/utils/common_text.dart';
+import 'package:skuld/utils/functions.dart';
+import 'package:skuld/utils/styles.dart';
 
 class TileDropdown extends StatelessWidget {
   final String label;
@@ -100,6 +108,40 @@ class StatBar extends StatelessWidget {
   }
 }
 
+class PlayerStats extends StatelessWidget {
+  final DatabaseService db;
+
+  const PlayerStats({super.key, required this.db});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<Player>(
+      stream: db.watchPlayer(),
+      builder: (BuildContext context, AsyncSnapshot<Player> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Center(child: Text(CText.errorLoadingPlayer, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary)));
+        }
+
+        final Player player = snapshot.data!;
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            PlayerStat(trailing: '⚔️', label: 'LEVEL', value: player.level),
+            PlayerStat(icon: Icons.favorite_rounded, label: 'HEALTH', value: player.hp, color: Theme.of(context).colorScheme.error),
+            PlayerStat(trailing: 'XP', label: '/ ${Functions.getTargetXp(player.level)}', value: player.xp, color: Styles.greenColor),
+            PlayerStat(icon: Icons.toll_rounded, label: 'CREDIT', value: player.credits, color: Styles.orangeColor),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class PlayerStat extends StatelessWidget {
   final IconData? icon;
   final String? trailing;
@@ -138,6 +180,73 @@ class PlayerStat extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class DailyQuestsBoard extends StatelessWidget {
+  const DailyQuestsBoard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          height:  0.4 * MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(5)),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(border: Border.symmetric(horizontal: BorderSide(width: 1, color: Theme.of(context).colorScheme.secondary))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.info_outline_rounded, color: Colors.white),
+                    const SizedBox(width: 5),
+                    Text(CText.textDailyQuestsTitle, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Consumer<QuestProvider>(
+                  builder: (context, questProvider, _) {
+                    final List<Quest> quests = questProvider.report.dailyQuests;
+
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: quests.isNotEmpty
+                              ? ListView.builder(
+                                itemCount: quests.length,
+                                itemBuilder: (context, index) {
+                                  Quest quest = quests[index];
+                                  return ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    visualDensity: const VisualDensity(vertical: VisualDensity.minimumDensity),
+                                    horizontalTitleGap: 50,
+                                    title: Text(quest.title.toUpperCase(), textAlign: TextAlign.left, maxLines: 1, style: const TextStyle(color: Colors.white, overflow: TextOverflow.ellipsis)),
+                                    trailing: quest.isDone ? const Icon(Icons.check_rounded, color: Styles.greenColor) : null,
+                                  );
+                                },
+                              )
+                              : Center(child: Text(CText.textNoDailyQuest.toUpperCase(), style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white))),
+                          ),
+                        ),
+                        if (questProvider.report.isPenalty)
+                          Text(CText.textIsPenalty.toUpperCase(), style: const TextStyle(color: Styles.redColor, fontWeight: FontWeight.w500), textAlign: TextAlign.center,),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

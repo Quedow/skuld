@@ -9,7 +9,7 @@ import 'package:skuld/utils/functions.dart';
 class QuestProvider with ChangeNotifier {
   final DatabaseService _db = DatabaseService();
 
-  int _currentScreenIndex = 1;
+  int _currentScreenIndex = 0;
   int get currentScreenIndex => _currentScreenIndex;
 
   void updateScreenIndex(int index) {
@@ -32,6 +32,7 @@ class QuestProvider with ChangeNotifier {
         await fetchRoutines();
         break;
     }
+    await fetchReport();
   }
 
   // Tasks
@@ -59,6 +60,7 @@ class QuestProvider with ChangeNotifier {
       _tasks.add(task);
     }
     await fetchDoneRates();
+    await fetchReport();
   }
 
   List<int> _doneRates = [0, 0];
@@ -102,11 +104,11 @@ class QuestProvider with ChangeNotifier {
 
   Future<void> completeRoutine(Routine routine) async {
     routine.dueDateTime = Functions.getNextDate(routine.dueDateTime, routine.frequency, routine.period, routine.days);
-    Future.delayed(const Duration(milliseconds: 500), () async {
+    await Future.delayed(const Duration(milliseconds: 500), () async {
       routine.isDone = false;
       await _db.completeRoutine(routine);
       notifyListeners();
-    });
+    }).whenComplete(() => fetchReport());
   }
 
   Future<void> endRoutine(Routine routine) async {
@@ -119,6 +121,15 @@ class QuestProvider with ChangeNotifier {
       _doneRoutines.remove(routine);
       _routines.add(routine);
     }
+    notifyListeners();
+  }
+
+  // Report
+  Report _report = Report(dailyQuests: [], isPenalty: false);
+  Report get report => _report;
+
+  Future<void> fetchReport() async {
+    _report = await _db.getReport();
     notifyListeners();
   }
 }

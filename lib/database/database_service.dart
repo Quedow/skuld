@@ -4,6 +4,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/player.dart';
+import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/utils/functions.dart';
@@ -183,6 +184,12 @@ class DatabaseService {
         routineToUpdate.days = routine.days;
         routineToUpdate.dueDateTime = routine.dueDateTime;
         routineToUpdate.isDone = routine.isDone;
+
+      final DateTime? lastDueDateTime = routineToUpdate.lastDueDateTime;
+      if (lastDueDateTime != null && (lastDueDateTime.isAfter(routine.dueDateTime) || lastDueDateTime.isAtSameMomentAs(routine.dueDateTime))) {
+        routineToUpdate.lastDueDateTime = null;
+      }
+
         await isar.routines.put(routineToUpdate);
       } else {
         await isar.routines.put(routine);
@@ -204,6 +211,7 @@ class DatabaseService {
     }
 
     await isar.writeTxn(() async {
+      routineToUpdate.lastDueDateTime = routineToUpdate.dueDateTime;
       routineToUpdate.dueDateTime = routine.dueDateTime;
       await isar.routines.put(routineToUpdate);
     });
@@ -258,6 +266,40 @@ class DatabaseService {
 
       await isar.players.put(player);
     });
+  }
+
+  Future<Report> getReport() async {
+    final DateTime now = DateTime.now();
+    final DateTime startOfDay = DateTime(now.year, now.month, now.day);
+    final DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+    final List<List<Object>> results = await Future.wait([
+      isar.tasks.filter().dueDateTimeBetween(startOfDay, endOfDay).findAll(),
+      isar.routines.filter().dueDateTimeBetween(startOfDay, endOfDay).findAll(),
+      isar.routines.filter().lastDueDateTimeIsNotNull().and().lastDueDateTimeBetween(startOfDay, endOfDay).findAll(),
+    ]);
+
+    final List<Task> tasks = results[0] as List<Task>;
+    final List<Routine> undoneRoutines = results[1] as List<Routine>;
+    final List<Routine> doneRoutines = results[2] as List<Routine>;
+
+    final List<Quest> dailyQuests = [
+      ...tasks.map((task) => Quest(task.title, task.isDone)),
+      ...undoneRoutines.map((routine) => Quest(routine.title, false)),
+      ...doneRoutines.map((routine) => Quest(routine.title, true)),
+    ];
+    return Report(
+      dailyQuests: dailyQuests,
+      isPenalty: await getIsPenalty(startOfDay),
+    );
+  }
+
+  Future<bool> getIsPenalty(DateTime startOfDay) async {
+    final List<bool> results = await Future.wait([
+      isar.tasks.filter().isDoneEqualTo(false).dueDateTimeLessThan(startOfDay).isNotEmpty(),
+      isar.routines.filter().dueDateTimeLessThan(startOfDay).isNotEmpty(),
+    ]);
+    return results.any((element) => element);
   }
 
   Future<void> clearDatabase() async {

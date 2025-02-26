@@ -13,6 +13,7 @@ class Routine {
   List<int> days;
   @Index()
   DateTime dueDateTime;
+  DateTime? lastDueDateTime;
   bool isDone = false;
 
   Routine(this.title, this.description, this.frequency, this.period, this.days, this.dueDateTime);

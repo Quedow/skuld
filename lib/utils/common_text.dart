@@ -39,6 +39,11 @@ abstract class CText {
     return isLongFormat ? 'Last activity: $content' : content;
   }
 
+  // Quests
+  static String textDailyQuestsTitle = 'DAILY QUESTS';
+  static String textNoDailyQuest = 'Nothing to do today.';
+  static String textIsPenalty = 'Attention ! Some old quests have not been completed.';
+
   // Tasks
   static String textTasksTitle = 'TASKS';
   static String textDoneTasksBtn = 'DONE TASKS';
