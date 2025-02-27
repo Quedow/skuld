@@ -1,5 +1,6 @@
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
+import 'package:skuld/utils/functions.dart';
 
 abstract class CText {
   static String textTitleForm(bool isEditMode, QuestType questType) {
@@ -36,7 +37,7 @@ abstract class CText {
       _ => '$daysAgo days ago',
     };
 
-    return isLongFormat ? 'Last activity: $content' : content;
+    return isLongFormat ? 'Last activity: $content (${Functions.getDate(lastDateTime)})' : content;
   }
 
   // Quests
