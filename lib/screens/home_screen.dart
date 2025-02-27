@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/screens/game_screen.dart';
 import 'package:skuld/screens/quests_screen.dart';
 import 'package:skuld/screens/settings_screen.dart';

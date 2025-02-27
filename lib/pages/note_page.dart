@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skuld/provider/settings_service.dart';
+import 'package:skuld/providers/settings_service.dart';
 import 'package:skuld/utils/common_text.dart';
 
 class NotePage extends StatefulWidget {

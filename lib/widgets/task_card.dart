@@ -12,8 +12,9 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
     final bool dueDateExpired = task.dueDateTime.isBefore(DateTime.now());
-    final Color dateTimeColor = (dueDateExpired && !task.isDone) ? Theme.of(context).colorScheme.error : Colors.black;
+    final Color dateTimeColor = (dueDateExpired && !task.isDone) ? themeData.colorScheme.error : Colors.black;
 
     return GestureDetector(
       onTap: onTap,
@@ -44,7 +45,7 @@ class TaskCard extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 2),
-                      child: Text(task.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge!.copyWith(decoration: task.isDone ? TextDecoration.lineThrough : TextDecoration.none)),
+                      child: Text(task.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: themeData.textTheme.bodyLarge!.copyWith(decoration: task.isDone ? TextDecoration.lineThrough : TextDecoration.none)),
                     ),
                     Wrap(
                       alignment: WrapAlignment.start,
@@ -52,9 +53,9 @@ class TaskCard extends StatelessWidget {
                       spacing: 5,
                       children: [
                         Icon(Icons.access_time_rounded, size: 15, color: dateTimeColor),
-                        Text(Functions.getTime(task.dueDateTime), style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
+                        Text(Functions.getTime(task.dueDateTime), style: themeData.textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
                         Icon(Icons.calendar_today_rounded, size: 15, color: dateTimeColor),
-                        Text(Functions.getDate(task.dueDateTime), style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
+                        Text(Functions.getDate(task.dueDateTime), style: themeData.textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
                       ],
                     ),
                   ],

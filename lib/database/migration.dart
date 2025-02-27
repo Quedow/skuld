@@ -3,7 +3,7 @@ import 'package:jiffy/jiffy.dart';
 import 'package:skuld/models/player.dart';
 import 'package:skuld/models/routine.dart';
 import 'package:skuld/models/task.dart';
-import 'package:skuld/provider/settings_service.dart';
+import 'package:skuld/providers/settings_service.dart';
 
 Future<void> performMigrationIfNeeded(Isar isar) async {
   final SettingsService settings = SettingsService();

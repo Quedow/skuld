@@ -5,7 +5,7 @@ import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/database/database_service.dart';
-import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/utils/rules.dart';
