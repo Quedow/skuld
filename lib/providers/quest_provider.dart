@@ -52,6 +52,7 @@ class QuestProvider with ChangeNotifier {
     final bool state = value ?? task.isDone;
     task.isDone = state;
     await _db.completeTask(task);
+    task.isReclaimed = true;
     if (state) {
       _tasks.remove(task);
       _doneTasks.add(task);

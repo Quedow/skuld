@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 
@@ -50,5 +52,11 @@ abstract class Functions {
         break;
     }
     return nextDate ?? date;
+  }
+
+
+  static double getRandomDouble(double min, double max) {
+    final random = Random();
+    return min + (random.nextDouble() * (max - min));
   }
 }

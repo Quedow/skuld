@@ -7,8 +7,9 @@ class TaskCard extends StatelessWidget {
   final Task task;
   final void Function()? onTap;
   final void Function(bool?)? onCheck;
+  final GlobalKey boxKey;
 
-  const TaskCard({super.key, required this.task, required this.onTap, required this.onCheck});
+  const TaskCard({super.key, required this.task, required this.onTap, required this.onCheck, required this.boxKey});
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +34,7 @@ class TaskCard extends StatelessWidget {
               ),
             ),
             Checkbox(
+              key: boxKey,
               value: task.isDone,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
               onChanged: onCheck,

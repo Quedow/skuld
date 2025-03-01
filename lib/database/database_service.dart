@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/player.dart';
 import 'package:skuld/models/quest.dart';
+import 'package:skuld/models/reward.dart';
 import 'package:skuld/models/routine.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/utils/functions.dart';
@@ -64,7 +65,10 @@ class DatabaseService {
 
     if (!taskToUpdate.isDone && !taskToUpdate.isReclaimed) {
       if (DateTime.now().isBefore(taskToUpdate.dueDateTime)) {
-        await updatePlayer(credits: 5, xp: 5 * (5 - taskToUpdate.priority));
+        await updatePlayer(
+          credits: rewards[RewardType.credits]!.onTimeTask(0),
+          xp: rewards[RewardType.xp]!.onTimeTask(taskToUpdate.priority),
+        );
       } else {
         await updatePlayer(hp: -5 * (5 - taskToUpdate.priority));
       }
