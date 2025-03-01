@@ -30,6 +30,14 @@ class SettingsService {
     return _preferences!.getString('deletionFrequency') ?? '1m';
   }
 
+  Future<void> setGameMode(bool value) async {
+    await _preferences!.setBool('gameMode', value);
+  }
+
+  bool getGameMode() {
+    return _preferences!.getBool('gameMode') ?? true;
+  }
+
   Future<void> setVersion(int version) async {
     await _preferences!.setInt('version', version);
   }

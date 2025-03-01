@@ -68,6 +68,8 @@ abstract class CText {
   static String textDeletionFrequencyContent = 'Quests with due date prior to the selected setting will be deleted.';
   static String textDeletePrefs = 'Delete preferences';
   static String textDeletePrefsContent = 'Preference settings will be reset default values.';
+  static String textGameMode = 'Game mode';
+  static String textGameModeContent = 'Display game elements and animation. Reload needed.';
 
   // Note
   static String textNote = 'Note';
