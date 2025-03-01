@@ -75,3 +75,26 @@ class TileButton extends StatelessWidget {
     );
   }
 }
+
+class TileToggle extends StatelessWidget {
+  final String label;
+  final String description;
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  const TileToggle({super.key, required this.label, required this.description, required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+      title: Text(label, style: Theme.of(context).textTheme.bodyLarge),
+      subtitle: Text(description, style: Theme.of(context).textTheme.bodySmall),
+      trailing: Switch(
+        value: value,
+        onChanged: onChanged,
+      ),
+    );
+  }
+}

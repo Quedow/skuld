@@ -42,6 +42,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           options: deletionFrequencies,
           onChanged: _setDeletionFrequency,
         ),
+        TileToggle(
+          label: CText.textGameMode,
+          description: CText.textGameModeContent,
+          value: _settings.getGameMode(),
+          onChanged: _setGameMode,
+        ),
         TileIconButton(
           label: CText.textDeletePrefs,
           description: CText.textDeletePrefsContent,
@@ -57,6 +63,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (value != null) {
       _settings.setDeletionFrequency(value);
     }
+  }
+
+  void _setGameMode(bool value) {
+    setState(() {
+      _settings.setGameMode(value);
+    });
   }
 
   void _openNotePage() {
