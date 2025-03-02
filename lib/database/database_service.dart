@@ -66,17 +66,20 @@ class DatabaseService {
     if (!taskToUpdate.isDone && !taskToUpdate.isReclaimed) {
       if (DateTime.now().isBefore(taskToUpdate.dueDateTime)) {
         await updatePlayer(
-          credits: rewards[RewardType.credits]!.onTimeTask(0),
-          xp: rewards[RewardType.xp]!.onTimeTask(taskToUpdate.priority),
+          credits: rewards[RewardType.credits]?.onTimeTask(taskToUpdate.priority),
+          xp: rewards[RewardType.xp]?.onTimeTask(taskToUpdate.priority),
         );
       } else {
-        await updatePlayer(hp: -5 * (5 - taskToUpdate.priority));
+        await updatePlayer(
+          credits: rewards[RewardType.credits]?.lateTask(taskToUpdate.priority),
+          hp: rewards[RewardType.hp]?.lateTask(taskToUpdate.priority),
+        );
       }
     }
 
     await isar.writeTxn(() async {
       taskToUpdate.isDone = task.isDone;
-      taskToUpdate.isReclaimed = true;
+      taskToUpdate.isReclaimed = task.isReclaimed;
       await isar.tasks.put(taskToUpdate);
     });
   }
@@ -141,9 +144,12 @@ class DatabaseService {
 
     if (isIncrement) {
       if (habitToUpdate.isGood) {
-        await updatePlayer(credits: 1, xp: 5);
+        await updatePlayer(
+          credits: rewards[RewardType.credits]?.goodHabit,
+          xp: rewards[RewardType.xp]?.goodHabit,
+        );
       } else {
-        await updatePlayer(hp: -5);
+        await updatePlayer(hp: rewards[RewardType.hp]?.badHabit);
       }
     }
 
@@ -208,9 +214,12 @@ class DatabaseService {
 
     if (!routineToUpdate.isDone) {
       if (DateTime.now().isBefore(routineToUpdate.dueDateTime)) {
-        await updatePlayer(credits: 5, xp: 5);
+        await updatePlayer(
+          credits: rewards[RewardType.credits]?.onTimeRoutine,
+          xp: rewards[RewardType.xp]?.onTimeRoutine,
+        );
       } else {
-        await updatePlayer(hp: -5);
+        await updatePlayer(hp: rewards[RewardType.hp]?.lateRoutine);
       }
     }
 

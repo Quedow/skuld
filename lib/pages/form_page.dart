@@ -126,7 +126,7 @@ class _FormPageState extends State<FormPage> {
       appBar: AppBar(
         title: Text(CText.textTitleForm(_isEditMode, _questType), style: Theme.of(context).textTheme.titleLarge),
         actions: _isEditMode ? [
-          IconButton(onPressed: () => Overlays.deletionDialog(context, _deleteQuest), icon: const Icon(Icons.delete_rounded)),
+          IconButton(onPressed: () => Dialogs.deletionDialog(context, _deleteQuest), icon: const Icon(Icons.delete_rounded)),
         ] : null,
       ),
       body: Padding(

@@ -52,7 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           label: CText.textDeletePrefs,
           description: CText.textDeletePrefsContent,
           icon: Icons.delete_rounded,
-          onPressed: () => Overlays.deletionDialog(context, _settings.clearSettings),
+          onPressed: () => Dialogs.deletionDialog(context, _settings.clearSettings),
         ),
         TileButton(label: CText.textNote, icon: Icons.edit_rounded, onPressed: _openNotePage),
       ],

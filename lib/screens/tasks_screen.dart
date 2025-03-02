@@ -4,8 +4,8 @@ import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/pages/form_page.dart';
+import 'package:skuld/utils/anim_controller.dart';
 import 'package:skuld/utils/common_text.dart';
-import 'package:skuld/widgets/overlays.dart';
 import 'package:skuld/widgets/task_card.dart';
 
 class TasksScreen extends StatefulWidget {
@@ -91,7 +91,7 @@ class _TasksScreenState extends State<TasksScreen> {
           task: task,
           onTap: () => _navigateToFormScreen(context, {QuestType.task: task}),
           onCheck: (value) {
-            Overlays.playRewardAnimation(context, key, task);
+            AnimController.playReward(context, key, task);
             _questProvider.completeTask(task, value);
           },
         );

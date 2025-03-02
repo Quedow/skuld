@@ -4,8 +4,8 @@ import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/routine.dart';
 import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/pages/form_page.dart';
+import 'package:skuld/utils/anim_controller.dart';
 import 'package:skuld/utils/common_text.dart';
-import 'package:skuld/widgets/overlays.dart';
 import 'package:skuld/widgets/routine_card.dart';
 
 class RoutinesScreen extends StatefulWidget {
@@ -74,7 +74,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
           routine: routine,
           onTap: () => _navigateToFormScreen(context, {QuestType.routine: routine}),
           onCheck: (value) {
-            Overlays.playRewardAnimation(context, key, routine);
+            AnimController.playReward(context, key, routine);
             _completeRoutine(routine);
           },
         );
