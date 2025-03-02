@@ -9,7 +9,7 @@ class HabitCard extends StatelessWidget {
   final void Function()? onIncrement;
   final GlobalKey? animationOriginKey;
   
-  const HabitCard({super.key, required this.habit, required this.onTap, required this.onIncrement, required this.animationOriginKey});
+  const HabitCard({super.key, required this.habit, required this.onTap, required this.onIncrement, this.animationOriginKey});
 
   @override
   Widget build(BuildContext context) {
