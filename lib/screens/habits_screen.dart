@@ -6,6 +6,7 @@ import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/pages/form_page.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/widgets/habit_card.dart';
+import 'package:skuld/widgets/overlays.dart';
 
 class HabitsScreen extends StatefulWidget {
   final QuestProvider questProvider;
@@ -43,11 +44,16 @@ class _HabitsScreenState extends State<HabitsScreen> {
     return ListView.builder(
       itemCount: habits.length,
       itemBuilder: (context, index) {
+        final GlobalKey key = GlobalKey();
         Habit habit = habits[index];
         return HabitCard(
+          animationOriginKey: key,
           habit: habit,
           onTap: () => _navigateToFormScreen(context, {QuestType.habit: habit}),
-          onIncrement: () => _questProvider.incrementHabitCounter(habit, 1),
+          onIncrement: () {
+            Overlays.playRewardAnimation(context, key, habit);
+            _questProvider.incrementHabitCounter(habit, 1);
+          },
         );
       },
     );

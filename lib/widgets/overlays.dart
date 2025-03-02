@@ -1,6 +1,8 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/reward.dart';
+import 'package:skuld/models/routine.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
@@ -34,27 +36,38 @@ abstract class Overlays {
     );
   }
 
-  static void playRewardAnimation(BuildContext context, GlobalKey key, Task task) {
-    if (task.isDone || task.isReclaimed) return;
+  static void playRewardAnimation(BuildContext context, GlobalKey animationOriginKey, Object quest) {
+    if (quest is! Task && quest is! Routine && quest is! Habit) return;
 
-    final bool isOnTime = DateTime.now().isBefore(task.dueDateTime);
+    final int Function(RewardData) getRewardValue;
+
+    if (quest is Task) {
+      if (quest.isDone || quest.isReclaimed) return;
+      final bool isOnTime = DateTime.now().isBefore(quest.dueDateTime);
+      getRewardValue = (rewardData) => isOnTime
+        ? rewardData.onTimeTask(quest.priority)
+        : rewardData.lateTask(quest.priority);
+    } else if (quest is Habit) {
+      getRewardValue = (rewardData) =>
+        quest.isGood ? rewardData.goodHabit : rewardData.badHabit;
+    } else if (quest is Routine) {
+      if (quest.isDone) return;
+      final bool isOnTime = DateTime.now().isBefore(quest.dueDateTime);
+      getRewardValue = (rewardData) => isOnTime
+        ? rewardData.onTimeRoutine
+        : rewardData.lateRoutine;
+    } else {
+      return;
+    }
 
     int index = 0;
     for (final RewardData rewardData in rewards.values) {
-      final int value = isOnTime
-        ? rewardData.onTimeTask(task.priority)
-        : rewardData.lateTask(task.priority);
-
+      final int value = getRewardValue(rewardData);
+      
       if (value == 0) continue;
 
       final String label = '${value >= 0 ? '+' : '-'}${value.abs()}${rewardData.label}';
-      Overlays._showAnimation(
-        context,
-        key,
-        label,
-        rewardData.color,
-        index,
-      );
+      Overlays._showAnimation(context, animationOriginKey, label, rewardData.color, index);
       index++;
     }
   }

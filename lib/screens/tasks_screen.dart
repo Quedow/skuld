@@ -87,7 +87,7 @@ class _TasksScreenState extends State<TasksScreen> {
         final GlobalKey key = GlobalKey();
         final Task task = tasks[index];
         return TaskCard(
-          boxKey: key,
+          animationOriginKey: key,
           task: task,
           onTap: () => _navigateToFormScreen(context, {QuestType.task: task}),
           onCheck: (value) {
