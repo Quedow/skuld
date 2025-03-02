@@ -9,8 +9,9 @@ class RoutineCard extends StatelessWidget {
   final Routine routine;
   final void Function()? onTap;
   final void Function(bool?)? onCheck;
+  final GlobalKey? animationOriginKey;
 
-  const RoutineCard({super.key, required this.routine, required this.onTap, required this.onCheck});
+  const RoutineCard({super.key, required this.routine, required this.onTap, required this.onCheck, this.animationOriginKey});
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +36,7 @@ class RoutineCard extends StatelessWidget {
               ),
             ),
             Checkbox(
+              key: animationOriginKey,
               value: routine.isDone,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
               onChanged: onCheck,

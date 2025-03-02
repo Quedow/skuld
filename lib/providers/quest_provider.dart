@@ -51,6 +51,7 @@ class QuestProvider with ChangeNotifier {
   Future<void> completeTask(Task task, bool? value) async {
     final bool state = value ?? task.isDone;
     task.isDone = state;
+    task.isReclaimed = true;
     await _db.completeTask(task);
     if (state) {
       _tasks.remove(task);

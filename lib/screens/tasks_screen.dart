@@ -4,6 +4,7 @@ import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/task.dart';
 import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/pages/form_page.dart';
+import 'package:skuld/utils/anim_controller.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/widgets/task_card.dart';
 
@@ -83,11 +84,16 @@ class _TasksScreenState extends State<TasksScreen> {
     return SliverList.builder(
       itemCount: tasks.length,
       itemBuilder: (context, index) {
+        final GlobalKey key = GlobalKey();
         final Task task = tasks[index];
         return TaskCard(
+          animationOriginKey: key,
           task: task,
           onTap: () => _navigateToFormScreen(context, {QuestType.task: task}),
-          onCheck: (value) => _questProvider.completeTask(task, value),
+          onCheck: (value) {
+            AnimController.playReward(context, key, task);
+            _questProvider.completeTask(task, value);
+          },
         );
       },
     );

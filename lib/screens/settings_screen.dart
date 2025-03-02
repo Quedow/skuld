@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:skuld/pages/note_page.dart';
 import 'package:skuld/providers/settings_service.dart';
 import 'package:skuld/utils/common_text.dart';
-import 'package:skuld/widgets/alerts.dart';
+import 'package:skuld/widgets/overlays.dart';
 import 'package:skuld/widgets/settings_components.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -52,7 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           label: CText.textDeletePrefs,
           description: CText.textDeletePrefsContent,
           icon: Icons.delete_rounded,
-          onPressed: () => Alerts.deletionDialog(context, _settings.clearSettings),
+          onPressed: () => Dialogs.deletionDialog(context, _settings.clearSettings),
         ),
         TileButton(label: CText.textNote, icon: Icons.edit_rounded, onPressed: _openNotePage),
       ],

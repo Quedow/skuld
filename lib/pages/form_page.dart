@@ -9,7 +9,7 @@ import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/utils/rules.dart';
-import 'package:skuld/widgets/alerts.dart';
+import 'package:skuld/widgets/overlays.dart';
 import 'package:skuld/widgets/form_components.dart';
 
 class FormPage extends StatefulWidget {
@@ -126,7 +126,7 @@ class _FormPageState extends State<FormPage> {
       appBar: AppBar(
         title: Text(CText.textTitleForm(_isEditMode, _questType), style: Theme.of(context).textTheme.titleLarge),
         actions: _isEditMode ? [
-          IconButton(onPressed: () => Alerts.deletionDialog(context, _deleteQuest), icon: const Icon(Icons.delete_rounded)),
+          IconButton(onPressed: () => Dialogs.deletionDialog(context, _deleteQuest), icon: const Icon(Icons.delete_rounded)),
         ] : null,
       ),
       body: Padding(
