@@ -42,8 +42,8 @@ class SettingsService {
     await _preferences!.setInt('version', version);
   }
 
-  int getVersion() {
-    return _preferences!.getInt('version') ?? 2;
+  int? getVersion() {
+    return _preferences!.getInt('version');
   }
 
   Future<void> clearSettings() async {

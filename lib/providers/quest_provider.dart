@@ -9,7 +9,7 @@ import 'package:skuld/utils/functions.dart';
 class QuestProvider with ChangeNotifier {
   final DatabaseService _db = DatabaseService();
 
-  int _currentScreenIndex = 0;
+  int _currentScreenIndex = 1;
   int get currentScreenIndex => _currentScreenIndex;
 
   void updateScreenIndex(int index) {

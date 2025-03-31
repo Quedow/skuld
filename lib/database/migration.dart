@@ -8,8 +8,11 @@ import 'package:skuld/providers/settings_service.dart';
 Future<void> performMigrationIfNeeded(Isar isar) async {
   final SettingsService settings = SettingsService();
   await clearOldQuests(isar, settings.getDeletionFrequency());
-  final int currentVersion = settings.getVersion();
+  final int? currentVersion = settings.getVersion();
   switch(currentVersion) {
+    case null:
+      await initPlayer(isar);
+      break;
     case 1:
       await migrateV1ToV2(isar);
       break;
@@ -41,6 +44,14 @@ Future<void> clearOldQuests(Isar isar, String deleteFrequency) async {
   });
 }
 
+Future<void> initPlayer(Isar isar) async {
+  if ((await isar.players.count()) == 0) {
+    await isar.writeTxn(() async {
+      await isar.players.put(Player());
+    });
+  }
+}
+
 Future<void> migrateV1ToV2(Isar isar) async {
   final int taskCount = await isar.tasks.count();
 
@@ -53,10 +64,5 @@ Future<void> migrateV1ToV2(Isar isar) async {
       await isar.tasks.putAll(tasks);
     });
   }
-
-  if ((await isar.players.count()) == 0) {
-    await isar.writeTxn(() async {
-      await isar.players.put(Player());
-    });
-  }
+  await initPlayer(isar);
 }
