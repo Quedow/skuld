@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skuld/database/database_service.dart';
+import 'package:skuld/database/db_service.dart';
 import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/widgets/game_components.dart';
 

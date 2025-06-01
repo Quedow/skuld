@@ -1,9 +1,7 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
-import 'package:skuld/database/database_service.dart';
-import 'package:skuld/models/habit.dart';
+import 'package:skuld/database/db_service.dart';
 import 'package:skuld/models/quest.dart';
-import 'package:skuld/models/routine.dart';
-import 'package:skuld/models/task.dart';
 import 'package:skuld/utils/functions.dart';
 
 class QuestProvider with ChangeNotifier {
@@ -113,8 +111,9 @@ class QuestProvider with ChangeNotifier {
   }
 
   Future<void> endRoutine(Routine routine) async {
-    routine.isDone = !routine.isDone;
-    await _db.insertOrUpdateRoutine(routine);
+    final bool isDone = !routine.isDone;
+    routine.isDone = isDone;
+    await _db.insertOrUpdateRoutine(RoutinesCompanion(isDone: Value(isDone)));
     if (routine.isDone) {
       _routines.remove(routine);
       _doneRoutines.add(routine);

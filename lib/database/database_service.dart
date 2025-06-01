@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:skuld/models/habit.dart';
-import 'package:skuld/models/player.dart';
+import 'package:skuld/models/old/habit.dart';
+import 'package:skuld/models/old/player.dart';
 import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/reward.dart';
-import 'package:skuld/models/routine.dart';
-import 'package:skuld/models/task.dart';
+import 'package:skuld/models/old/routine.dart';
+import 'package:skuld/models/old/task.dart';
 import 'package:skuld/utils/functions.dart';
 
 class DatabaseService {
@@ -195,10 +195,10 @@ class DatabaseService {
         routineToUpdate.dueDateTime = routine.dueDateTime;
         routineToUpdate.isDone = routine.isDone;
 
-      final DateTime? lastDueDateTime = routineToUpdate.lastDueDateTime;
-      if (lastDueDateTime != null && (lastDueDateTime.isAfter(routine.dueDateTime) || lastDueDateTime.isAtSameMomentAs(routine.dueDateTime))) {
-        routineToUpdate.lastDueDateTime = null;
-      }
+        final DateTime? lastDueDateTime = routineToUpdate.lastDueDateTime;
+        if (lastDueDateTime != null && (lastDueDateTime.isAfter(routine.dueDateTime) || lastDueDateTime.isAtSameMomentAs(routine.dueDateTime))) {
+          routineToUpdate.lastDueDateTime = null;
+        }
 
         await isar.routines.put(routineToUpdate);
       } else {

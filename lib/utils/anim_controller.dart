@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:skuld/models/habit.dart';
+import 'package:skuld/database/db_service.dart';
 import 'package:skuld/models/reward.dart';
-import 'package:skuld/models/routine.dart';
-import 'package:skuld/models/task.dart';
 import 'package:skuld/providers/settings_service.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/widgets/overlays.dart';

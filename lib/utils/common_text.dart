@@ -1,5 +1,5 @@
+import 'package:skuld/models/db/routine.dart';
 import 'package:skuld/models/quest.dart';
-import 'package:skuld/models/routine.dart';
 import 'package:skuld/utils/functions.dart';
 
 abstract class CText {
