@@ -70,6 +70,12 @@ abstract class CText {
   static String textDeletePrefsContent = 'Preference settings will be reset default values.';
   static String textGameMode = 'Game mode';
   static String textGameModeContent = 'Display game elements and animation. Reload needed.';
+  static String textExport = 'Export data';
+  static String textExportContent = 'Export tasks, habits, routines, note and player statistics.';
+  static String textImport = 'Import data';
+  static String textImportContent = 'Import tasks, habits, routines and player statistics from a backup. Current data will be permanently deleted.';
+  static String textSuccessImport = 'Data imported successfully';
+  static String textSuccessExport = 'Data exported successfully';
 
   // Note
   static String textNote = 'Note';
@@ -80,6 +86,10 @@ abstract class CText {
   static String errorLoadingTasks = 'Error when loading tasks'; // Not used
   static String errorLoadingHabits = 'Error when loading habits'; // Not used
   static String errorLoadingPlayer = 'ERROR WHEN LOADING PLAYER STATS';
+  static String errorDirectoryNotFound = 'Failed to found directory';
+  static String errorBackupNotFound = 'No backup found';
+  static String errorImport = 'An error occurred during importation';
+  static String errorExport = 'An error occurred during exportation';
 
   // Rules
   static String errorRequiredRule = 'This filed cannot be empty';

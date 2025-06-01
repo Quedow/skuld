@@ -12,6 +12,23 @@ class Player {
   List<int> itemIDs = [];
 
   Player();
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'level': level,
+    'hp': hp,
+    'xp': xp,
+    'credits': credits,
+    'itemIDs': itemIDs,
+  };
+
+  factory Player.fromJson(Map<String, dynamic> json) => Player()
+    ..id = json['id'] as int
+    ..level = json['level'] as int
+    ..hp = json['hp'] as int
+    ..xp = json['xp'] as int
+    ..credits = json['credits'] as int
+    ..itemIDs = List<int>.from(json['itemIDs'] as List);
 }
 
 /* class Item {

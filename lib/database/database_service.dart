@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,10 +9,13 @@ import 'package:skuld/models/quest.dart';
 import 'package:skuld/models/reward.dart';
 import 'package:skuld/models/old/routine.dart';
 import 'package:skuld/models/old/task.dart';
+import 'package:skuld/providers/settings_service.dart';
+import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
+  final SettingsService _settings = SettingsService();
   late final Isar isar;
 
   factory DatabaseService() {
@@ -319,5 +323,63 @@ class DatabaseService {
     await isar.writeTxn(() async {
       await isar.clear();
     });
+  }
+
+  Future<String> importData() async {
+    try {
+      final Directory? directory = await getDownloadsDirectory();
+      if (directory == null) return CText.errorDirectoryNotFound;
+      
+      final File file = File('${directory.path}/skuld_backup.json');
+      if (!await file.exists()) return CText.errorBackupNotFound;
+
+      final String raw = await file.readAsString();
+      final Map<String, dynamic> jsonData = jsonDecode(raw);
+
+      final Player player = Player.fromJson(jsonData['player']);
+      final List<Task> tasks = (jsonData['tasks'] as List).map((t) => Task.fromJson(t)).toList();
+      final List<Habit> habits = (jsonData['habits'] as List).map((h) => Habit.fromJson(h)).toList();
+      final List<Routine> routines = (jsonData['routines'] as List).map((r) => Routine.fromJson(r)).toList();
+      final String note = jsonData['note'].toString();
+
+      await clearDatabase();
+
+      await isar.writeTxn(() async {
+        await isar.players.put(player);
+        await isar.tasks.putAll(tasks);
+        await isar.habits.putAll(habits);
+        await isar.routines.putAll(routines);
+      });
+      await _settings.setNoteContent(note);
+      return CText.textSuccessImport;
+    } catch (e) {
+      return CText.errorImport;
+    }
+  }
+
+  Future<String> exportData() async {
+    try {
+      final Directory? directory = await getDownloadsDirectory();
+      if (directory == null) return CText.errorDirectoryNotFound;
+      
+      final File file = File('${directory.path}/skuld_backup.json');
+
+      final Player player = await isar.players.get(1) ?? Player();
+      final List<Task> tasks = await isar.tasks.where().findAll();
+      final List<Habit> habits = await isar.habits.where().findAll();
+      final List<Routine> routines = await isar.routines.where().findAll();
+
+      final Map<String, dynamic> data = {
+        'player': player.toJson(),
+        'tasks': tasks.map((t) => t.toJson()).toList(),
+        'habits': habits.map((h) => h.toJson()).toList(),
+        'routines': routines.map((r) => r.toJson()).toList(),
+        'note': _settings.getNoteContent(),
+      };
+      await file.writeAsString(jsonEncode(data));
+      return CText.textSuccessExport;
+    } catch (e) {
+      return CText.errorExport;
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skuld/database/database_service.dart';
 import 'package:skuld/pages/note_page.dart';
 import 'package:skuld/providers/settings_service.dart';
 import 'package:skuld/utils/common_text.dart';
@@ -15,6 +16,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final SettingsService _settings = SettingsService();
+  final DatabaseService _db = DatabaseService();
   final Map<String, String> deletionFrequencies = const {
     '1w': '1 week',
     '2w': '2 weeks',
@@ -55,6 +57,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onPressed: () => Dialogs.deletionDialog(context, _settings.clearSettings),
         ),
         TileButton(label: CText.textNote, icon: Icons.edit_rounded, onPressed: _openNotePage),
+        TileIconButton(
+          label: CText.textImport,
+          description: CText.textImportContent,
+          icon: Icons.download_rounded,
+          onPressed: _importData,
+        ),
+        TileIconButton(
+          label: CText.textExport,
+          description: CText.textExportContent,
+          icon: Icons.upload_rounded,
+          onPressed: _exportData,
+        ),
       ],
     );
   }
@@ -73,5 +87,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _openNotePage() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => const NotePage()));
+  }
+
+  Future<void> _importData() async {
+    final String result = await _db.importData();
+    _showSnackBar(result);
+  }
+
+  Future<void> _exportData() async {
+    final String result = await _db.exportData();
+    _showSnackBar(result);
+  }
+
+  void _showSnackBar(String content) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(content),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        duration: const Duration(milliseconds: 2000),
+      ),
+    );
   }
 }
