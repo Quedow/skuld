@@ -16,6 +16,26 @@ class Task {
   bool isReclaimed = false;
 
   Task(this.title, this.description, this.dueDateTime, this.priority);
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'description': description,
+    'dueDateTime': dueDateTime.toIso8601String(),
+    'priority': priority,
+    'isDone': isDone,
+    'isReclaimed': isReclaimed,
+  };
+
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
+    json['title'] as String,
+    json['description'] as String,
+    DateTime.parse(json['dueDateTime'] as String),
+    json['priority'] as int,
+  )
+  ..id = json['id'] as int
+  ..isDone = json['isDone'] as bool
+  ..isReclaimed = json['isReclaimed'] as bool;
 }
 
 const Map<int, String> priorityToLabel = {
