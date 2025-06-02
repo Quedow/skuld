@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'db_service.dart';
+part of 'database_service.dart';
 
 // ignore_for_file: type=lint
 class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
@@ -232,6 +232,21 @@ class Task extends DataClass implements Insertable<Task> {
         isDone: isDone ?? this.isDone,
         isReclaimed: isReclaimed ?? this.isReclaimed,
       );
+  Task copyWithCompanion(TasksCompanion data) {
+    return Task(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      description:
+          data.description.present ? data.description.value : this.description,
+      dueDateTime:
+          data.dueDateTime.present ? data.dueDateTime.value : this.dueDateTime,
+      priority: data.priority.present ? data.priority.value : this.priority,
+      isDone: data.isDone.present ? data.isDone.value : this.isDone,
+      isReclaimed:
+          data.isReclaimed.present ? data.isReclaimed.value : this.isReclaimed,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Task(')
@@ -576,6 +591,20 @@ class Habit extends DataClass implements Insertable<Habit> {
             lastDateTime.present ? lastDateTime.value : this.lastDateTime,
         counter: counter ?? this.counter,
       );
+  Habit copyWithCompanion(HabitsCompanion data) {
+    return Habit(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      description:
+          data.description.present ? data.description.value : this.description,
+      isGood: data.isGood.present ? data.isGood.value : this.isGood,
+      lastDateTime: data.lastDateTime.present
+          ? data.lastDateTime.value
+          : this.lastDateTime,
+      counter: data.counter.present ? data.counter.value : this.counter,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Habit(')
@@ -738,7 +767,6 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
   late final GeneratedColumn<String> period = GeneratedColumn<String>(
       'period', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _daysMeta = const VerificationMeta('days');
   @override
   late final GeneratedColumnWithTypeConverter<List<int>, String> days =
       GeneratedColumn<String>('days', aliasedName, false,
@@ -816,7 +844,6 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
     } else if (isInserting) {
       context.missing(_periodMeta);
     }
-    context.handle(_daysMeta, const VerificationResult.success());
     if (data.containsKey('dueDateTime')) {
       context.handle(
           _dueDateTimeMeta,
@@ -983,6 +1010,24 @@ class Routine extends DataClass implements Insertable<Routine> {
             : this.lastDueDateTime,
         isDone: isDone ?? this.isDone,
       );
+  Routine copyWithCompanion(RoutinesCompanion data) {
+    return Routine(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      description:
+          data.description.present ? data.description.value : this.description,
+      frequency: data.frequency.present ? data.frequency.value : this.frequency,
+      period: data.period.present ? data.period.value : this.period,
+      days: data.days.present ? data.days.value : this.days,
+      dueDateTime:
+          data.dueDateTime.present ? data.dueDateTime.value : this.dueDateTime,
+      lastDueDateTime: data.lastDueDateTime.present
+          ? data.lastDueDateTime.value
+          : this.lastDueDateTime,
+      isDone: data.isDone.present ? data.isDone.value : this.isDone,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Routine(')
@@ -1314,6 +1359,16 @@ class Player extends DataClass implements Insertable<Player> {
         xp: xp ?? this.xp,
         credits: credits ?? this.credits,
       );
+  Player copyWithCompanion(PlayersCompanion data) {
+    return Player(
+      id: data.id.present ? data.id.value : this.id,
+      level: data.level.present ? data.level.value : this.level,
+      hp: data.hp.present ? data.hp.value : this.hp,
+      xp: data.xp.present ? data.xp.value : this.xp,
+      credits: data.credits.present ? data.credits.value : this.credits,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Player(')
@@ -1437,7 +1492,7 @@ class PlayersCompanion extends UpdateCompanion<Player> {
 
 abstract class _$DatabaseService extends GeneratedDatabase {
   _$DatabaseService(QueryExecutor e) : super(e);
-  _$DatabaseServiceManager get managers => _$DatabaseServiceManager(this);
+  $DatabaseServiceManager get managers => $DatabaseServiceManager(this);
   late final $TasksTable tasks = $TasksTable(this);
   late final $HabitsTable habits = $HabitsTable(this);
   late final $RoutinesTable routines = $RoutinesTable(this);
@@ -1454,7 +1509,7 @@ abstract class _$DatabaseService extends GeneratedDatabase {
       [tasks, habits, routines, players, taskDueDateTime, routineDueDateTime];
 }
 
-typedef $$TasksTableInsertCompanionBuilder = TasksCompanion Function({
+typedef $$TasksTableCreateCompanionBuilder = TasksCompanion Function({
   Value<int> id,
   required String title,
   Value<String?> description,
@@ -1473,25 +1528,122 @@ typedef $$TasksTableUpdateCompanionBuilder = TasksCompanion Function({
   Value<bool> isReclaimed,
 });
 
+class $$TasksTableFilterComposer
+    extends Composer<_$DatabaseService, $TasksTable> {
+  $$TasksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dueDateTime => $composableBuilder(
+      column: $table.dueDateTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get priority => $composableBuilder(
+      column: $table.priority, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDone => $composableBuilder(
+      column: $table.isDone, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isReclaimed => $composableBuilder(
+      column: $table.isReclaimed, builder: (column) => ColumnFilters(column));
+}
+
+class $$TasksTableOrderingComposer
+    extends Composer<_$DatabaseService, $TasksTable> {
+  $$TasksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dueDateTime => $composableBuilder(
+      column: $table.dueDateTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get priority => $composableBuilder(
+      column: $table.priority, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDone => $composableBuilder(
+      column: $table.isDone, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isReclaimed => $composableBuilder(
+      column: $table.isReclaimed, builder: (column) => ColumnOrderings(column));
+}
+
+class $$TasksTableAnnotationComposer
+    extends Composer<_$DatabaseService, $TasksTable> {
+  $$TasksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dueDateTime => $composableBuilder(
+      column: $table.dueDateTime, builder: (column) => column);
+
+  GeneratedColumn<int> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDone =>
+      $composableBuilder(column: $table.isDone, builder: (column) => column);
+
+  GeneratedColumn<bool> get isReclaimed => $composableBuilder(
+      column: $table.isReclaimed, builder: (column) => column);
+}
+
 class $$TasksTableTableManager extends RootTableManager<
     _$DatabaseService,
     $TasksTable,
     Task,
     $$TasksTableFilterComposer,
     $$TasksTableOrderingComposer,
-    $$TasksTableProcessedTableManager,
-    $$TasksTableInsertCompanionBuilder,
-    $$TasksTableUpdateCompanionBuilder> {
+    $$TasksTableAnnotationComposer,
+    $$TasksTableCreateCompanionBuilder,
+    $$TasksTableUpdateCompanionBuilder,
+    (Task, BaseReferences<_$DatabaseService, $TasksTable, Task>),
+    Task,
+    PrefetchHooks Function()> {
   $$TasksTableTableManager(_$DatabaseService db, $TasksTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$TasksTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$TasksTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) => $$TasksTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$TasksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TasksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TasksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String?> description = const Value.absent(),
@@ -1509,7 +1661,7 @@ class $$TasksTableTableManager extends RootTableManager<
             isDone: isDone,
             isReclaimed: isReclaimed,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String title,
             Value<String?> description = const Value.absent(),
@@ -1527,100 +1679,26 @@ class $$TasksTableTableManager extends RootTableManager<
             isDone: isDone,
             isReclaimed: isReclaimed,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$TasksTableProcessedTableManager extends ProcessedTableManager<
+typedef $$TasksTableProcessedTableManager = ProcessedTableManager<
     _$DatabaseService,
     $TasksTable,
     Task,
     $$TasksTableFilterComposer,
     $$TasksTableOrderingComposer,
-    $$TasksTableProcessedTableManager,
-    $$TasksTableInsertCompanionBuilder,
-    $$TasksTableUpdateCompanionBuilder> {
-  $$TasksTableProcessedTableManager(super.$state);
-}
-
-class $$TasksTableFilterComposer
-    extends FilterComposer<_$DatabaseService, $TasksTable> {
-  $$TasksTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get title => $state.composableBuilder(
-      column: $state.table.title,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dueDateTime => $state.composableBuilder(
-      column: $state.table.dueDateTime,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get priority => $state.composableBuilder(
-      column: $state.table.priority,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isDone => $state.composableBuilder(
-      column: $state.table.isDone,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isReclaimed => $state.composableBuilder(
-      column: $state.table.isReclaimed,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$TasksTableOrderingComposer
-    extends OrderingComposer<_$DatabaseService, $TasksTable> {
-  $$TasksTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get title => $state.composableBuilder(
-      column: $state.table.title,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dueDateTime => $state.composableBuilder(
-      column: $state.table.dueDateTime,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get priority => $state.composableBuilder(
-      column: $state.table.priority,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isDone => $state.composableBuilder(
-      column: $state.table.isDone,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isReclaimed => $state.composableBuilder(
-      column: $state.table.isReclaimed,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$HabitsTableInsertCompanionBuilder = HabitsCompanion Function({
+    $$TasksTableAnnotationComposer,
+    $$TasksTableCreateCompanionBuilder,
+    $$TasksTableUpdateCompanionBuilder,
+    (Task, BaseReferences<_$DatabaseService, $TasksTable, Task>),
+    Task,
+    PrefetchHooks Function()>;
+typedef $$HabitsTableCreateCompanionBuilder = HabitsCompanion Function({
   Value<int> id,
   required String title,
   required String description,
@@ -1637,25 +1715,114 @@ typedef $$HabitsTableUpdateCompanionBuilder = HabitsCompanion Function({
   Value<int> counter,
 });
 
+class $$HabitsTableFilterComposer
+    extends Composer<_$DatabaseService, $HabitsTable> {
+  $$HabitsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isGood => $composableBuilder(
+      column: $table.isGood, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastDateTime => $composableBuilder(
+      column: $table.lastDateTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get counter => $composableBuilder(
+      column: $table.counter, builder: (column) => ColumnFilters(column));
+}
+
+class $$HabitsTableOrderingComposer
+    extends Composer<_$DatabaseService, $HabitsTable> {
+  $$HabitsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isGood => $composableBuilder(
+      column: $table.isGood, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastDateTime => $composableBuilder(
+      column: $table.lastDateTime,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get counter => $composableBuilder(
+      column: $table.counter, builder: (column) => ColumnOrderings(column));
+}
+
+class $$HabitsTableAnnotationComposer
+    extends Composer<_$DatabaseService, $HabitsTable> {
+  $$HabitsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<bool> get isGood =>
+      $composableBuilder(column: $table.isGood, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastDateTime => $composableBuilder(
+      column: $table.lastDateTime, builder: (column) => column);
+
+  GeneratedColumn<int> get counter =>
+      $composableBuilder(column: $table.counter, builder: (column) => column);
+}
+
 class $$HabitsTableTableManager extends RootTableManager<
     _$DatabaseService,
     $HabitsTable,
     Habit,
     $$HabitsTableFilterComposer,
     $$HabitsTableOrderingComposer,
-    $$HabitsTableProcessedTableManager,
-    $$HabitsTableInsertCompanionBuilder,
-    $$HabitsTableUpdateCompanionBuilder> {
+    $$HabitsTableAnnotationComposer,
+    $$HabitsTableCreateCompanionBuilder,
+    $$HabitsTableUpdateCompanionBuilder,
+    (Habit, BaseReferences<_$DatabaseService, $HabitsTable, Habit>),
+    Habit,
+    PrefetchHooks Function()> {
   $$HabitsTableTableManager(_$DatabaseService db, $HabitsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$HabitsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$HabitsTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) => $$HabitsTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$HabitsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HabitsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HabitsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> description = const Value.absent(),
@@ -1671,7 +1838,7 @@ class $$HabitsTableTableManager extends RootTableManager<
             lastDateTime: lastDateTime,
             counter: counter,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String title,
             required String description,
@@ -1687,90 +1854,26 @@ class $$HabitsTableTableManager extends RootTableManager<
             lastDateTime: lastDateTime,
             counter: counter,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$HabitsTableProcessedTableManager extends ProcessedTableManager<
+typedef $$HabitsTableProcessedTableManager = ProcessedTableManager<
     _$DatabaseService,
     $HabitsTable,
     Habit,
     $$HabitsTableFilterComposer,
     $$HabitsTableOrderingComposer,
-    $$HabitsTableProcessedTableManager,
-    $$HabitsTableInsertCompanionBuilder,
-    $$HabitsTableUpdateCompanionBuilder> {
-  $$HabitsTableProcessedTableManager(super.$state);
-}
-
-class $$HabitsTableFilterComposer
-    extends FilterComposer<_$DatabaseService, $HabitsTable> {
-  $$HabitsTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get title => $state.composableBuilder(
-      column: $state.table.title,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isGood => $state.composableBuilder(
-      column: $state.table.isGood,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get lastDateTime => $state.composableBuilder(
-      column: $state.table.lastDateTime,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get counter => $state.composableBuilder(
-      column: $state.table.counter,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$HabitsTableOrderingComposer
-    extends OrderingComposer<_$DatabaseService, $HabitsTable> {
-  $$HabitsTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get title => $state.composableBuilder(
-      column: $state.table.title,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isGood => $state.composableBuilder(
-      column: $state.table.isGood,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get lastDateTime => $state.composableBuilder(
-      column: $state.table.lastDateTime,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get counter => $state.composableBuilder(
-      column: $state.table.counter,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$RoutinesTableInsertCompanionBuilder = RoutinesCompanion Function({
+    $$HabitsTableAnnotationComposer,
+    $$HabitsTableCreateCompanionBuilder,
+    $$HabitsTableUpdateCompanionBuilder,
+    (Habit, BaseReferences<_$DatabaseService, $HabitsTable, Habit>),
+    Habit,
+    PrefetchHooks Function()>;
+typedef $$RoutinesTableCreateCompanionBuilder = RoutinesCompanion Function({
   Value<int> id,
   required String title,
   required String description,
@@ -1793,26 +1896,144 @@ typedef $$RoutinesTableUpdateCompanionBuilder = RoutinesCompanion Function({
   Value<bool> isDone,
 });
 
+class $$RoutinesTableFilterComposer
+    extends Composer<_$DatabaseService, $RoutinesTable> {
+  $$RoutinesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get frequency => $composableBuilder(
+      column: $table.frequency, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get period => $composableBuilder(
+      column: $table.period, builder: (column) => ColumnFilters(column));
+
+  ColumnWithTypeConverterFilters<List<int>, List<int>, String> get days =>
+      $composableBuilder(
+          column: $table.days,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnFilters<DateTime> get dueDateTime => $composableBuilder(
+      column: $table.dueDateTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastDueDateTime => $composableBuilder(
+      column: $table.lastDueDateTime,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDone => $composableBuilder(
+      column: $table.isDone, builder: (column) => ColumnFilters(column));
+}
+
+class $$RoutinesTableOrderingComposer
+    extends Composer<_$DatabaseService, $RoutinesTable> {
+  $$RoutinesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get frequency => $composableBuilder(
+      column: $table.frequency, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get period => $composableBuilder(
+      column: $table.period, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get days => $composableBuilder(
+      column: $table.days, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dueDateTime => $composableBuilder(
+      column: $table.dueDateTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastDueDateTime => $composableBuilder(
+      column: $table.lastDueDateTime,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDone => $composableBuilder(
+      column: $table.isDone, builder: (column) => ColumnOrderings(column));
+}
+
+class $$RoutinesTableAnnotationComposer
+    extends Composer<_$DatabaseService, $RoutinesTable> {
+  $$RoutinesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<int> get frequency =>
+      $composableBuilder(column: $table.frequency, builder: (column) => column);
+
+  GeneratedColumn<String> get period =>
+      $composableBuilder(column: $table.period, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<List<int>, String> get days =>
+      $composableBuilder(column: $table.days, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dueDateTime => $composableBuilder(
+      column: $table.dueDateTime, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastDueDateTime => $composableBuilder(
+      column: $table.lastDueDateTime, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDone =>
+      $composableBuilder(column: $table.isDone, builder: (column) => column);
+}
+
 class $$RoutinesTableTableManager extends RootTableManager<
     _$DatabaseService,
     $RoutinesTable,
     Routine,
     $$RoutinesTableFilterComposer,
     $$RoutinesTableOrderingComposer,
-    $$RoutinesTableProcessedTableManager,
-    $$RoutinesTableInsertCompanionBuilder,
-    $$RoutinesTableUpdateCompanionBuilder> {
+    $$RoutinesTableAnnotationComposer,
+    $$RoutinesTableCreateCompanionBuilder,
+    $$RoutinesTableUpdateCompanionBuilder,
+    (Routine, BaseReferences<_$DatabaseService, $RoutinesTable, Routine>),
+    Routine,
+    PrefetchHooks Function()> {
   $$RoutinesTableTableManager(_$DatabaseService db, $RoutinesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$RoutinesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$RoutinesTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$RoutinesTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$RoutinesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RoutinesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RoutinesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> description = const Value.absent(),
@@ -1834,7 +2055,7 @@ class $$RoutinesTableTableManager extends RootTableManager<
             lastDueDateTime: lastDueDateTime,
             isDone: isDone,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String title,
             required String description,
@@ -1856,122 +2077,26 @@ class $$RoutinesTableTableManager extends RootTableManager<
             lastDueDateTime: lastDueDateTime,
             isDone: isDone,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$RoutinesTableProcessedTableManager extends ProcessedTableManager<
+typedef $$RoutinesTableProcessedTableManager = ProcessedTableManager<
     _$DatabaseService,
     $RoutinesTable,
     Routine,
     $$RoutinesTableFilterComposer,
     $$RoutinesTableOrderingComposer,
-    $$RoutinesTableProcessedTableManager,
-    $$RoutinesTableInsertCompanionBuilder,
-    $$RoutinesTableUpdateCompanionBuilder> {
-  $$RoutinesTableProcessedTableManager(super.$state);
-}
-
-class $$RoutinesTableFilterComposer
-    extends FilterComposer<_$DatabaseService, $RoutinesTable> {
-  $$RoutinesTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get title => $state.composableBuilder(
-      column: $state.table.title,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get frequency => $state.composableBuilder(
-      column: $state.table.frequency,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get period => $state.composableBuilder(
-      column: $state.table.period,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnWithTypeConverterFilters<List<int>, List<int>, String> get days =>
-      $state.composableBuilder(
-          column: $state.table.days,
-          builder: (column, joinBuilders) => ColumnWithTypeConverterFilters(
-              column,
-              joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dueDateTime => $state.composableBuilder(
-      column: $state.table.dueDateTime,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get lastDueDateTime => $state.composableBuilder(
-      column: $state.table.lastDueDateTime,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isDone => $state.composableBuilder(
-      column: $state.table.isDone,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$RoutinesTableOrderingComposer
-    extends OrderingComposer<_$DatabaseService, $RoutinesTable> {
-  $$RoutinesTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get title => $state.composableBuilder(
-      column: $state.table.title,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get frequency => $state.composableBuilder(
-      column: $state.table.frequency,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get period => $state.composableBuilder(
-      column: $state.table.period,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get days => $state.composableBuilder(
-      column: $state.table.days,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dueDateTime => $state.composableBuilder(
-      column: $state.table.dueDateTime,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get lastDueDateTime => $state.composableBuilder(
-      column: $state.table.lastDueDateTime,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isDone => $state.composableBuilder(
-      column: $state.table.isDone,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$PlayersTableInsertCompanionBuilder = PlayersCompanion Function({
+    $$RoutinesTableAnnotationComposer,
+    $$RoutinesTableCreateCompanionBuilder,
+    $$RoutinesTableUpdateCompanionBuilder,
+    (Routine, BaseReferences<_$DatabaseService, $RoutinesTable, Routine>),
+    Routine,
+    PrefetchHooks Function()>;
+typedef $$PlayersTableCreateCompanionBuilder = PlayersCompanion Function({
   Value<int> id,
   Value<int> level,
   Value<int> hp,
@@ -1988,25 +2113,104 @@ typedef $$PlayersTableUpdateCompanionBuilder = PlayersCompanion Function({
   Value<int> rowid,
 });
 
+class $$PlayersTableFilterComposer
+    extends Composer<_$DatabaseService, $PlayersTable> {
+  $$PlayersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get level => $composableBuilder(
+      column: $table.level, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get hp => $composableBuilder(
+      column: $table.hp, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get xp => $composableBuilder(
+      column: $table.xp, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get credits => $composableBuilder(
+      column: $table.credits, builder: (column) => ColumnFilters(column));
+}
+
+class $$PlayersTableOrderingComposer
+    extends Composer<_$DatabaseService, $PlayersTable> {
+  $$PlayersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get level => $composableBuilder(
+      column: $table.level, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get hp => $composableBuilder(
+      column: $table.hp, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get xp => $composableBuilder(
+      column: $table.xp, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get credits => $composableBuilder(
+      column: $table.credits, builder: (column) => ColumnOrderings(column));
+}
+
+class $$PlayersTableAnnotationComposer
+    extends Composer<_$DatabaseService, $PlayersTable> {
+  $$PlayersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get level =>
+      $composableBuilder(column: $table.level, builder: (column) => column);
+
+  GeneratedColumn<int> get hp =>
+      $composableBuilder(column: $table.hp, builder: (column) => column);
+
+  GeneratedColumn<int> get xp =>
+      $composableBuilder(column: $table.xp, builder: (column) => column);
+
+  GeneratedColumn<int> get credits =>
+      $composableBuilder(column: $table.credits, builder: (column) => column);
+}
+
 class $$PlayersTableTableManager extends RootTableManager<
     _$DatabaseService,
     $PlayersTable,
     Player,
     $$PlayersTableFilterComposer,
     $$PlayersTableOrderingComposer,
-    $$PlayersTableProcessedTableManager,
-    $$PlayersTableInsertCompanionBuilder,
-    $$PlayersTableUpdateCompanionBuilder> {
+    $$PlayersTableAnnotationComposer,
+    $$PlayersTableCreateCompanionBuilder,
+    $$PlayersTableUpdateCompanionBuilder,
+    (Player, BaseReferences<_$DatabaseService, $PlayersTable, Player>),
+    Player,
+    PrefetchHooks Function()> {
   $$PlayersTableTableManager(_$DatabaseService db, $PlayersTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$PlayersTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$PlayersTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) => $$PlayersTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$PlayersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlayersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PlayersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<int> level = const Value.absent(),
             Value<int> hp = const Value.absent(),
@@ -2022,7 +2226,7 @@ class $$PlayersTableTableManager extends RootTableManager<
             credits: credits,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<int> level = const Value.absent(),
             Value<int> hp = const Value.absent(),
@@ -2038,82 +2242,29 @@ class $$PlayersTableTableManager extends RootTableManager<
             credits: credits,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$PlayersTableProcessedTableManager extends ProcessedTableManager<
+typedef $$PlayersTableProcessedTableManager = ProcessedTableManager<
     _$DatabaseService,
     $PlayersTable,
     Player,
     $$PlayersTableFilterComposer,
     $$PlayersTableOrderingComposer,
-    $$PlayersTableProcessedTableManager,
-    $$PlayersTableInsertCompanionBuilder,
-    $$PlayersTableUpdateCompanionBuilder> {
-  $$PlayersTableProcessedTableManager(super.$state);
-}
+    $$PlayersTableAnnotationComposer,
+    $$PlayersTableCreateCompanionBuilder,
+    $$PlayersTableUpdateCompanionBuilder,
+    (Player, BaseReferences<_$DatabaseService, $PlayersTable, Player>),
+    Player,
+    PrefetchHooks Function()>;
 
-class $$PlayersTableFilterComposer
-    extends FilterComposer<_$DatabaseService, $PlayersTable> {
-  $$PlayersTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get level => $state.composableBuilder(
-      column: $state.table.level,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get hp => $state.composableBuilder(
-      column: $state.table.hp,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get xp => $state.composableBuilder(
-      column: $state.table.xp,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get credits => $state.composableBuilder(
-      column: $state.table.credits,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$PlayersTableOrderingComposer
-    extends OrderingComposer<_$DatabaseService, $PlayersTable> {
-  $$PlayersTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get level => $state.composableBuilder(
-      column: $state.table.level,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get hp => $state.composableBuilder(
-      column: $state.table.hp,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get xp => $state.composableBuilder(
-      column: $state.table.xp,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get credits => $state.composableBuilder(
-      column: $state.table.credits,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-class _$DatabaseServiceManager {
+class $DatabaseServiceManager {
   final _$DatabaseService _db;
-  _$DatabaseServiceManager(this._db);
+  $DatabaseServiceManager(this._db);
   $$TasksTableTableManager get tasks =>
       $$TasksTableTableManager(_db, _db.tasks);
   $$HabitsTableTableManager get habits =>

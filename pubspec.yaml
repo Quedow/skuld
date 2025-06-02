@@ -12,10 +12,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flame: ^1.20.0
-  intl: ^0.19.0
+  intl: ^0.20.2
   provider: ^6.1.2
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
   path_provider: ^2.1.5
   jiffy: ^6.3.1
   choice: ^2.3.2
@@ -28,8 +26,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
-  isar_generator: ^3.1.0+1
+  flutter_lints: ^6.0.0
   build_runner: ^2.4.13
   drift_dev: ^2.18.0
 

@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:skuld/database/db_service.dart';
+import 'package:skuld/database/database_service.dart';
 import 'package:skuld/models/db/habit.dart';
 import 'package:skuld/models/db/routine.dart';
 import 'package:skuld/models/db/task.dart';

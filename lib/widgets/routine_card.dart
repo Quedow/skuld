@@ -1,6 +1,6 @@
 import 'package:extended_wrap/extended_wrap.dart';
 import 'package:flutter/material.dart';
-import 'package:skuld/database/db_service.dart';
+import 'package:skuld/database/database_service.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/utils/styles.dart';
