@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:skuld/database/database_service.dart';
 import 'package:skuld/pages/note_page.dart';
@@ -36,6 +37,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return ListView(
       children: [
+        TileToggle(
+          label: CText.textGameMode,
+          description: CText.textGameModeContent,
+          value: _settings.getGameMode(),
+          onChanged: _setGameMode,
+        ),
+        TileButton(label: CText.textNote, icon: Icons.edit_rounded, onPressed: _openNotePage),
         TileDropdown(
           label: CText.textDeletionFrequency,
           dropdownLabel: CText.textDropdownFrequency,
@@ -44,19 +52,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           options: deletionFrequencies,
           onChanged: _setDeletionFrequency,
         ),
-        TileToggle(
-          label: CText.textGameMode,
-          description: CText.textGameModeContent,
-          value: _settings.getGameMode(),
-          onChanged: _setGameMode,
-        ),
         TileIconButton(
           label: CText.textDeletePrefs,
           description: CText.textDeletePrefsContent,
           icon: Icons.delete_rounded,
           onPressed: () => Dialogs.deletionDialog(context, _settings.clearSettings),
         ),
-        TileButton(label: CText.textNote, icon: Icons.edit_rounded, onPressed: _openNotePage),
         TileIconButton(
           label: CText.textImport,
           description: CText.textImportContent,
@@ -90,12 +91,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _importData() async {
-    final String result = await _db.importData();
+    final String? path = (await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    ))?.paths.first;
+    if (path == null) return;
+    final String result = await _db.importData(path);
     _showSnackBar(result);
   }
 
   Future<void> _exportData() async {
-    final String result = await _db.exportData();
+    final String? path = await FilePicker.platform.getDirectoryPath();
+    if (path == null) return;
+    final String result = await _db.exportData(path);
     _showSnackBar(result);
   }
 

@@ -18,13 +18,12 @@ part 'database_service.g.dart';
 
 @DriftDatabase(tables: [Tasks, Habits, Routines, Players])
 class DatabaseService extends _$DatabaseService {
+  static final DatabaseService _instance = DatabaseService._internal();
   final SettingsService _settings = SettingsService();
 
-  DatabaseService._internal() : super(_openConnection());
-
-  static final DatabaseService _instance = DatabaseService._internal();
-
   factory DatabaseService() => _instance;
+
+  DatabaseService._internal() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;
@@ -59,9 +58,9 @@ class DatabaseService extends _$DatabaseService {
       : false;
 
     if (isUpdate) {
-      await managers.tasks.filter((t) => t.id.equals(task.id.value)).update((t) => task);
+      await managers.tasks.filter((t) => t.id.equals(task.id.value)).update((_) => task);
     } else {
-      await managers.tasks.create((t) => task);
+      await managers.tasks.create((_) => task);
     }
   }
 
@@ -84,11 +83,11 @@ class DatabaseService extends _$DatabaseService {
       }
     }
 
-    await (update(tasks)..where((t) => t.id.equals(task.id))).write(
-      TasksCompanion(
+    await managers.tasks.filter((t) => t.id.equals(task.id)).update(
+      (t) => t(
         isDone: Value(task.isDone),
         isReclaimed: Value(task.isReclaimed),
-      ),
+      )
     );
   }
 
@@ -132,9 +131,9 @@ class DatabaseService extends _$DatabaseService {
       : false;
 
     if (isUpdate) {
-      await managers.habits.filter((h) => h.id.equals(habit.id.value)).update((h) => habit);
+      await managers.habits.filter((h) => h.id.equals(habit.id.value)).update((_) => habit);
     } else {
-      await managers.habits.create((h) => habit);
+      await managers.habits.create((_) => habit);
     }
   }
 
@@ -154,8 +153,8 @@ class DatabaseService extends _$DatabaseService {
       }
     }
 
-    await (update(habits)..where((h) => h.id.equals(habit.id))).write(
-      HabitsCompanion(
+    await managers.habits.filter((h) => h.id.equals(habit.id)).update(
+      (h) => h(
         counter: Value(habit.counter),
         lastDateTime: isIncrement ? Value(habit.lastDateTime) : const Value.absent(),
       ),
@@ -207,7 +206,7 @@ class DatabaseService extends _$DatabaseService {
         .filter((r) => r.id.equals(routineToUpdate.id))
         .update((_) => routinesCompanion);
     } else {
-      await managers.routines.create((r) => routine);
+      await managers.routines.create((_) => routine);
     }
   }
 
@@ -227,8 +226,8 @@ class DatabaseService extends _$DatabaseService {
       }
     }
 
-    await managers.routines.filter((r) => r.id.equals(routineToUpdate.id)).update((r) =>
-      RoutinesCompanion(
+    await managers.routines.filter((r) => r.id.equals(routine.id)).update((r) =>
+      r(
         lastDueDateTime: Value(routineToUpdate.dueDateTime),
         dueDateTime: Value(routine.dueDateTime),
       ),
@@ -240,7 +239,7 @@ class DatabaseService extends _$DatabaseService {
   }
 
   Stream<Player> watchPlayer() {
-    return select(players).watchSingleOrNull().map((player) {
+    return managers.players.filter((p) => p.id.equals(1)).watchSingleOrNull().map((player) {
       if (player == null) {
         throw Exception();
       }
@@ -249,9 +248,10 @@ class DatabaseService extends _$DatabaseService {
   }
 
   Future<void> updatePlayer({int? hp, int? xp, int? credits}) async {
-    final Player player = await managers.players.getSingleOrNull() ?? await managers.players.createReturning((p) => p());
-    
     if (hp == null && xp == null && credits == null) return;
+    
+    final Player player = await managers.players.filter((p) => p.id.equals(1)).getSingleOrNull()
+      ?? await managers.players.createReturning((p) => p());
 
     int playerHp = player.hp;
     int playerXp = player.xp;
@@ -282,15 +282,13 @@ class DatabaseService extends _$DatabaseService {
 
     if (credits != null) playerCredits += credits;
 
-    await managers.players.filter((p) => p.id.equals(1)).update((p) => player.copyWith(
+    await managers.players.filter((p) => p.id.equals(1)).update((_) => player.copyWith(
       hp: playerHp,
       xp: playerXp,
       credits: playerCredits,
       level: playerLevel,
     ));
   }
-
-  // ----------------- REPORT ----------------- //
 
   Future<Report> getReport() async {
     final DateTime now = DateTime.now();
@@ -331,16 +329,12 @@ class DatabaseService extends _$DatabaseService {
       b.deleteAll(tasks);
       b.deleteAll(habits);
       b.deleteAll(routines);
-      b.deleteAll(players);
     });
   }
 
-  Future<String> importData() async {
+  Future<String> importData(String path) async {
     try {
-      final Directory? directory = await getDownloadsDirectory();
-      if (directory == null) return CText.errorDirectoryNotFound;
-      
-      final File file = File('${directory.path}/skuld_backup.json');
+      final File file = File(path);
       if (!await file.exists()) return CText.errorBackupNotFound;
 
       final String raw = await file.readAsString();
@@ -349,21 +343,21 @@ class DatabaseService extends _$DatabaseService {
       final Player playerRow = Player.fromJson(jsonData['player']);
       final List<Task> taskRows = (jsonData['tasks'] as List).map((t) => Task.fromJson(t)).toList();
       final List<Habit> habitRows = (jsonData['habits'] as List).map((h) => Habit.fromJson(h)).toList();
-      final List<Routine> routineRows = (jsonData['routines'] as List).map((r) => Routine.fromJson(r)).toList();
+      final List<Routine> routineRows = (jsonData['routines'] as List).map((r) {
+        final Map<String, dynamic> map = Map<String, dynamic>.from(r as Map);
+        map['days'] = (map['days'] as List).cast<int>();
+        return Routine.fromJson(map);
+      }).toList();
       final String note = jsonData['note'].toString();
 
       await clearDatabase();
 
-      await  batch((b) {
-        b.insert(players, playerRow);
+      await batch((b) {
+        b.update(players, playerRow, where: (p) => p.id.equals(1));
         b.insertAll(tasks, taskRows);
         b.insertAll(habits, habitRows);
         b.insertAll(routines, routineRows);
       });
-      // await managers.players.create((t) => playerRow);
-      // await managers.tasks.bulkCreate((t) => taskRows);
-      // await managers.habits.bulkCreate((t) => habitRows);
-      // await managers.routines.bulkCreate((t) => routineRows);
       await _settings.setNoteContent(note);
       return CText.textSuccessImport;
     } catch (e) {
@@ -371,12 +365,9 @@ class DatabaseService extends _$DatabaseService {
     }
   }
 
-  Future<String> exportData() async {
+  Future<String> exportData(String path) async {
     try {
-      final Directory? directory = await getDownloadsDirectory();
-      if (directory == null) return CText.errorDirectoryNotFound;
-      
-      final File file = File('${directory.path}/skuld_backup.json');
+      final File file = File('$path/skuld_backup_${Functions.getBackupDate()}.json');
 
       final Player player = await managers.players.filter((f) => f.id.equals(1)).getSingle();
       final List<Task> tasks = await managers.tasks.get();
@@ -391,7 +382,6 @@ class DatabaseService extends _$DatabaseService {
         'note': _settings.getNoteContent(),
       };
       await file.writeAsString(jsonEncode(data));
-      print(jsonEncode(data));
       return CText.textSuccessExport;
     } catch (e) {
       return CText.errorExport;

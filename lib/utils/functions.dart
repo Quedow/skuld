@@ -12,6 +12,10 @@ abstract class Functions {
     return DateFormat('HH:mm').format(date);
   }
 
+  static String getBackupDate() {
+    return DateFormat('dd-MM-yyyy_HH-mm-ss').format(DateTime.now());
+  }
+
   static int getMaxHp(int level) {
     return 100 + level * 20;
   }

@@ -65,15 +65,15 @@ abstract class CText {
   // Settings
   static String textDropdownFrequency = 'Frequency';
   static String textDeletionFrequency = 'Deletion frequency';
-  static String textDeletionFrequencyContent = 'Quests with due date prior to the selected setting will be deleted.';
+  static String textDeletionFrequencyContent = 'Done quests with due date prior to the selected setting will be deleted.';
   static String textDeletePrefs = 'Delete preferences';
   static String textDeletePrefsContent = 'Preference settings will be reset default values.';
   static String textGameMode = 'Game mode';
-  static String textGameModeContent = 'Display game elements and animation. Reload needed.';
+  static String textGameModeContent = 'Display game elements and animation (Reload needed).';
   static String textExport = 'Export data';
   static String textExportContent = 'Export tasks, habits, routines, note and player statistics.';
   static String textImport = 'Import data';
-  static String textImportContent = 'Import tasks, habits, routines and player statistics from a backup. Current data will be permanently deleted.';
+  static String textImportContent = 'Import tasks, habits, routines and player statistics from a backup. Current data will be permanently deleted (Reload recommended).';
   static String textSuccessImport = 'Data imported successfully';
   static String textSuccessExport = 'Data exported successfully';
 
@@ -83,10 +83,7 @@ abstract class CText {
   static String textNoteSaved = 'Your note has been saved';
 
   // Errors
-  static String errorLoadingTasks = 'Error when loading tasks'; // Not used
-  static String errorLoadingHabits = 'Error when loading habits'; // Not used
   static String errorLoadingPlayer = 'ERROR WHEN LOADING PLAYER STATS';
-  static String errorDirectoryNotFound = 'Failed to found directory';
   static String errorBackupNotFound = 'No backup found';
   static String errorImport = 'An error occurred during importation';
   static String errorExport = 'An error occurred during exportation';

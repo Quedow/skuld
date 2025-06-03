@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:skuld/database/database_service.dart';
+import 'package:skuld/database/migration.dart';
 import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/providers/settings_service.dart';
 import 'package:skuld/screens/home_screen.dart';
@@ -17,9 +18,8 @@ Future<void> main() async {
   ]);
 
   await SettingsService().init();
-  // final Isar isar = await DatabaseService().init();
-  // await performMigrationIfNeeded(isar);
-  await DatabaseService().updatePlayer();
+  DatabaseService db = DatabaseService();
+  await performMigrationIfNeeded(db);
 
   runApp(
     ChangeNotifierProvider(

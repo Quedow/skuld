@@ -247,11 +247,6 @@ class _FormPageState extends State<FormPage> {
 
   Future<void> _updateTask() async {
     final DateTime dueDateTime = DateTime(_dateController.year, _dateController.month, _dateController.day, _timeController.hour, _timeController.minute);
-
-    // _quest.title = _titleController.text;
-    // _quest.description = _descriptionController.text;
-    // _quest.dueDateTime = dueDateTime;
-    // _quest.priority = _priorityController;
     
     await _db.insertOrUpdateTask((_quest as Task).toCompanion(true).copyWith(
       title: Value(_titleController.text),
@@ -270,10 +265,6 @@ class _FormPageState extends State<FormPage> {
   }
 
   Future<void> _updateHabit() async {
-    // _quest.title = _titleController.text;
-    // _quest.description = _descriptionController.text;
-    // _quest.isGood = _isGoodController;
-
     await _db.insertOrUpdateHabit((_quest as Habit).toCompanion(true).copyWith(
       title: Value(_titleController.text),
       description: Value(_descriptionController.text),
@@ -296,14 +287,7 @@ class _FormPageState extends State<FormPage> {
 
   Future<void> _updateRoutine() async {
     final DateTime dueDateTime = DateTime(_dateController.year, _dateController.month, _dateController.day, _timeController.hour, _timeController.minute);
-             
-    // _quest.title = _titleController.text;
-    // _quest.description = _descriptionController.text;
-    // _quest.frequency = int.tryParse(_frequencyController.text) ?? 1;
-    // _quest.period = _periodController;
-    // _quest.days = _daysController;
-    // _quest.dueDateTime = dueDateTime;
-    
+                 
     await _db.insertOrUpdateRoutine((_quest as Routine).toCompanion(true).copyWith(
       title: Value(_titleController.text),
       description: Value(_descriptionController.text),
