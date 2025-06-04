@@ -27,7 +27,7 @@ Future<void> clearOldQuests(DatabaseService db, String deleteFrequency) async {
 }
 
 Future<void> initPlayer(DatabaseService db) async {
-  if ((await db.managers.players.count()) == 0) {
-    await db.managers.players.create((p) => p());
+  if (!(await db.managers.players.filter((p) => p.id.equals(1)).exists())) {
+    await db.managers.players.create((p) => p(id: const Value(1)));
   }
 }

@@ -251,7 +251,7 @@ class DatabaseService extends _$DatabaseService {
     if (hp == null && xp == null && credits == null) return;
     
     final Player player = await managers.players.filter((p) => p.id.equals(1)).getSingleOrNull()
-      ?? await managers.players.createReturning((p) => p());
+      ?? await managers.players.createReturning((p) => p(id: const Value(1)));
 
     int playerHp = player.hp;
     int playerXp = player.xp;
