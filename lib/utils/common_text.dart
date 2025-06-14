@@ -1,5 +1,6 @@
+import 'package:skuld/models/db/routine.dart';
 import 'package:skuld/models/quest.dart';
-import 'package:skuld/models/routine.dart';
+import 'package:skuld/utils/functions.dart';
 
 abstract class CText {
   static String textTitleForm(bool isEditMode, QuestType questType) {
@@ -36,8 +37,13 @@ abstract class CText {
       _ => '$daysAgo days ago',
     };
 
-    return isLongFormat ? 'Last activity: $content' : content;
+    return isLongFormat ? 'Last activity: $content (${Functions.getDate(lastDateTime)})' : content;
   }
+
+  // Quests
+  static String textDailyQuestsTitle = 'DAILY QUESTS';
+  static String textNoDailyQuest = 'Nothing to do today.';
+  static String textIsPenalty = 'Attention ! Some old quests have not been completed.';
 
   // Tasks
   static String textTasksTitle = 'TASKS';
@@ -59,9 +65,17 @@ abstract class CText {
   // Settings
   static String textDropdownFrequency = 'Frequency';
   static String textDeletionFrequency = 'Deletion frequency';
-  static String textDeletionFrequencyContent = 'Quests with due date prior to the selected setting will be deleted.';
+  static String textDeletionFrequencyContent = 'Done quests with due date prior to the selected setting will be deleted.';
   static String textDeletePrefs = 'Delete preferences';
   static String textDeletePrefsContent = 'Preference settings will be reset default values.';
+  static String textGameMode = 'Game mode';
+  static String textGameModeContent = 'Display game elements and animation (Reload needed).';
+  static String textExport = 'Export data';
+  static String textExportContent = 'Export tasks, habits, routines, note and player statistics.';
+  static String textImport = 'Import data';
+  static String textImportContent = 'Import tasks, habits, routines and player statistics from a backup. Current data will be permanently deleted (Reload recommended).';
+  static String textSuccessImport = 'Data imported successfully';
+  static String textSuccessExport = 'Data exported successfully';
 
   // Note
   static String textNote = 'Note';
@@ -69,8 +83,10 @@ abstract class CText {
   static String textNoteSaved = 'Your note has been saved';
 
   // Errors
-  static String errorLoadingTasks = 'Error when loading tasks';
-  static String errorLoadingHabits = 'Error when loading habits';
+  static String errorLoadingPlayer = 'ERROR WHEN LOADING PLAYER STATS';
+  static String errorBackupNotFound = 'No backup found';
+  static String errorImport = 'An error occurred during importation';
+  static String errorExport = 'An error occurred during exportation';
 
   // Rules
   static String errorRequiredRule = 'This filed cannot be empty';

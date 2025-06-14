@@ -1,31 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:skuld/database/database_service.dart';
+import 'package:skuld/providers/quest_provider.dart';
+import 'package:skuld/widgets/game_components.dart';
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+  final QuestProvider questProvider;
+
+  const GameScreen({super.key, required this.questProvider});
 
   @override
   State<GameScreen> createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
-  int hp = 100;
-  int exp = 50;
+  final DatabaseService _db = DatabaseService();
+  late final QuestProvider _questProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _questProvider = widget.questProvider;
+    _questProvider.fetchReport();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text('Player HP: $hp'),
-        Text('Player EXP: $exp'),
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              exp += 10;
-            });
-          },
-          child: const Text('Gain EXP'),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 130,
+            width: 100,
+            child: CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              child: const Icon(Icons.person_rounded, size: 65),
+            ),
+          ),
+          const SizedBox(height: 25),
+          PlayerStats(db: _db),
+          const DailyQuestsBoard(),
+        ],
+      ),
     );
   }
 }

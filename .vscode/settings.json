@@ -1,11 +1,13 @@
 {
-    "cSpell.words": [
-        "autovalidate",
-        "Autovalidate",
-        "Checkmark",
-        "colorpicker",
-        "Prefs",
-        "skuld",
-        "unfocus"
-    ]
+  "cSpell.words": [
+    "autovalidate",
+    "Autovalidate",
+    "Checkmark",
+    "colorpicker",
+    "nullable",
+    "Prefs",
+    "skuld",
+    "unfocus"
+  ],
+  "dart.flutterSdkPath": ".fvm/versions/3.32.0"
 }

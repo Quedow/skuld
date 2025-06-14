@@ -76,6 +76,11 @@ abstract class Styles {
           textStyle: const WidgetStatePropertyAll(labelLargeStyle),
         ),
     ),
+    switchTheme: SwitchThemeData(
+      trackOutlineColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) => states.contains(WidgetState.selected) ? primaryColor : unselectedItemColor),
+      thumbColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) => states.contains(WidgetState.selected) ? Colors.white : unselectedItemColor),
+      trackColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) => states.contains(WidgetState.selected) ? primaryColor : const Color(0xFFE4E4E4)),
+    ),
     filledButtonTheme: FilledButtonThemeData(
       style: ButtonStyle(shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)))),
     ),
@@ -93,6 +98,7 @@ abstract class Styles {
       bodySmall: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: hintColor), // Caption, secondary text
       labelLarge: labelLargeStyle, // Navigation links, menu items, text input
       labelMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w500), // Button text, tabs
+      labelSmall: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
     ),
   );
 }

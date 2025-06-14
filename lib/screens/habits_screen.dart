@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:skuld/models/habit.dart';
+import 'package:skuld/database/database_service.dart';
 import 'package:skuld/models/quest.dart';
-import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/pages/form_page.dart';
+import 'package:skuld/utils/anim_controller.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/widgets/habit_card.dart';
 
@@ -43,12 +44,16 @@ class _HabitsScreenState extends State<HabitsScreen> {
     return ListView.builder(
       itemCount: habits.length,
       itemBuilder: (context, index) {
+        final GlobalKey key = GlobalKey();
         Habit habit = habits[index];
         return HabitCard(
+          animationOriginKey: key,
           habit: habit,
           onTap: () => _navigateToFormScreen(context, {QuestType.habit: habit}),
-          onIncrement: () => _questProvider.incrementHabitCounter(habit, 1),
-          onDecrement: () => _questProvider.incrementHabitCounter(habit, -1),
+          onIncrement: () {
+            AnimController.playReward(context, key, habit);
+            _questProvider.incrementHabitCounter(habit, 1);
+          },
         );
       },
     );

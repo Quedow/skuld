@@ -1,6 +1,7 @@
 import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
 import 'package:skuld/utils/rules.dart';
+import 'package:skuld/utils/styles.dart';
 
 class SegmentedButtonQuest<T> extends StatelessWidget {
   final T selectedValue;
@@ -57,20 +58,21 @@ class IconSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Container(
         padding: const EdgeInsets.only(left: 20, right: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Theme.of(context).hintColor, width: 1),
+          borderRadius: BorderRadius.circular(Styles.borderRadius),
+          border: Border.all(color: themeData.hintColor, width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: Theme.of(context).textTheme.labelLarge),
-            Text(value, style: Theme.of(context).textTheme.bodyMedium),
-            IconButton(icon: Icon(icon), onPressed: onPressed, color: Theme.of(context).colorScheme.primary),
+            Text(label, style: themeData.textTheme.labelLarge),
+            Text(value, style: themeData.textTheme.bodyMedium),
+            IconButton(icon: Icon(icon), onPressed: onPressed, color: themeData.colorScheme.primary),
           ],
         ),
       ),
@@ -129,20 +131,21 @@ class FrequencySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Container(
         padding: const EdgeInsets.only(left: 20, right: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Theme.of(context).hintColor, width: 1),
+          borderRadius: BorderRadius.circular(Styles.borderRadius),
+          border: Border.all(color: themeData.hintColor, width: 1),
         ),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Repeat all', style: Theme.of(context).textTheme.labelLarge),
+                Text('Repeat all', style: themeData.textTheme.labelLarge),
                 SizedBox(
                   width: 40,
                   child: TextFormField(
@@ -160,7 +163,7 @@ class FrequencySelector extends StatelessWidget {
                   width: 150,
                   child: DropdownButtonFormField<String>(
                     value: periodController,
-                    iconEnabledColor: Theme.of(context).colorScheme.primary,
+                    iconEnabledColor: themeData.colorScheme.primary,
                     decoration: const InputDecoration(border: InputBorder.none, isDense: true),
                     onChanged: onPeriodChanged,
                     items: periodToLabel.entries.map((entry) {
@@ -168,7 +171,7 @@ class FrequencySelector extends StatelessWidget {
                         value: entry.key,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(entry.value, style: Theme.of(context).textTheme.labelLarge),
+                          child: Text(entry.value, style: themeData.textTheme.labelLarge),
                         ),
                       );
                     }).toList(),

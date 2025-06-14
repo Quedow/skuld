@@ -1,88 +1,97 @@
 import 'dart:io';
+import 'dart:convert';
 
-import 'package:isar/isar.dart';
+import 'package:drift/drift.dart';
+import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:skuld/models/habit.dart';
-import 'package:skuld/models/routine.dart';
-import 'package:skuld/models/task.dart';
+import 'package:skuld/models/db/habit.dart';
+import 'package:skuld/models/db/player.dart';
+import 'package:skuld/models/db/routine.dart';
+import 'package:skuld/models/db/task.dart';
+import 'package:skuld/models/quest.dart';
+import 'package:skuld/models/reward.dart';
+import 'package:skuld/providers/settings_service.dart';
+import 'package:skuld/utils/common_text.dart';
+import 'package:skuld/utils/functions.dart';
 
-class DatabaseService {
+part 'database_service.g.dart';
+
+@DriftDatabase(tables: [Tasks, Habits, Routines, Players])
+class DatabaseService extends _$DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
-  late final Isar isar;
+  final SettingsService _settings = SettingsService();
 
-  factory DatabaseService() {
-    return _instance;
-  }
+  factory DatabaseService() => _instance;
 
-  DatabaseService._internal();
+  DatabaseService._internal() : super(_openConnection());
 
-  Future<Isar> init() async {
-    final Directory dir = await getApplicationDocumentsDirectory();
-    isar = await Isar.open(
-      [TaskSchema, HabitSchema, RoutineSchema],
-      directory: dir.path,
-      inspector: false, // set to false for build
+  @override
+  int get schemaVersion => 1;
+
+  static QueryExecutor _openConnection() {
+    return driftDatabase(
+      name: 'skuld_db',
+      native: const DriftNativeOptions(
+        // By default, `driftDatabase` from `package:drift_flutter` stores the
+        // database files in `getApplicationDocumentsDirectory()`.
+        databaseDirectory: getApplicationSupportDirectory,
+      ),
+      // If you need web support, see https://drift.simonbinder.eu/platforms/web/
     );
-    return isar;
   }
 
-  Future<Task?> getTask(int id) async {
-    return await isar.tasks.get(id);
+  Future<Task?> getTask(int id) {
+    return managers.tasks.filter((t) => t.id.equals(id)).getSingleOrNull();
   }
 
-  Future<Habit?> getHabit(int id) async {
-    return await isar.habits.get(id);
+  Future<List<Task>> getTasks(bool isDone) {
+    final query = managers.tasks.filter((t) => t.isDone.equals(isDone));
+
+    return isDone
+      ? query.get()
+      : query.orderBy((t) => t.dueDateTime.asc()).get();
   }
 
-  Future<void> insertOrUpdateTask(Task task) async {
-    await isar.writeTxn(() async {
-      await isar.tasks.put(task);
-    });
+  Future<void> insertOrUpdateTask(TasksCompanion task) async {
+    final bool isUpdate = task.id.present
+      ? await managers.tasks.filter((t) => t.id.equals(task.id.value)).exists()
+      : false;
+
+    if (isUpdate) {
+      await managers.tasks.filter((t) => t.id.equals(task.id.value)).update((_) => task);
+    } else {
+      await managers.tasks.create((_) => task);
+    }
   }
 
-  Future<void> insertOrUpdateHabit(Habit habit) async {
-    await isar.writeTxn(() async {
-      await isar.habits.put(habit);
-    });
-  }
+  Future<void> completeTask(Task task) async {
+    final Task? taskToUpdate = await getTask(task.id);
 
-  Future<void> insertOrUpdateRoutine(Routine routine) async {
-    await isar.writeTxn(() async {
-      await isar.routines.put(routine);
-    });
-  }
+    if (taskToUpdate == null) return;
 
-  Future<void> completeTask(int id, bool state) async {
-    await isar.writeTxn(() async {
-      final Task? taskToUpdate = await isar.tasks.filter().idEqualTo(id).findFirst();
-      if (taskToUpdate != null) {
-        taskToUpdate.isDone = state;
-        await isar.tasks.put(taskToUpdate);
+    if (!taskToUpdate.isDone && !taskToUpdate.isReclaimed) {
+      if (DateTime.now().isBefore(taskToUpdate.dueDateTime)) {
+        await updatePlayer(
+          credits: rewards[RewardType.credits]?.onTimeTask(taskToUpdate.priority),
+          xp: rewards[RewardType.xp]?.onTimeTask(taskToUpdate.priority),
+        );
+      } else {
+        await updatePlayer(
+          credits: rewards[RewardType.credits]?.lateTask(taskToUpdate.priority),
+          hp: rewards[RewardType.hp]?.lateTask(taskToUpdate.priority),
+        );
       }
-    });
+    }
+
+    await managers.tasks.filter((t) => t.id.equals(task.id)).update(
+      (t) => t(
+        isDone: Value(task.isDone),
+        isReclaimed: Value(task.isReclaimed),
+      )
+    );
   }
 
-  Future<List<Task>> getTasks(bool isDone) async {
-    var query = isar.tasks.where().anyDueDateTime().filter().isDoneEqualTo(isDone);
-
-    return !isDone
-      ? await query.findAll()
-      : await query.sortByDueDateTimeDesc().findAll();
-  }
-
-  Future<List<Habit>> getHabits() async {
-    return await isar.habits.where().findAll();
-  }
-
-  Future<List<Routine>> getRoutines(bool isDone) async {
-    var query = isar.routines.where().anyDueDateTime().filter().isDoneEqualTo(isDone);
-
-    return !isDone
-      ? await query.findAll()
-      : await query.sortByDueDateTimeDesc().findAll();
-  }
-
-  Future<List<int>> getDoneRates() async {
+  Future<List<int>> getDoneRates() async {    
     final DateTime now = DateTime.now();
     
     final DateTime startOfDay = DateTime(now.year, now.month, now.day);
@@ -90,12 +99,12 @@ class DatabaseService {
 
     final DateTime startOfWeek = DateTime(now.year, now.month, now.day - (now.weekday - 1));
     final DateTime endOfWeek = DateTime(now.year, now.month, now.day + (7 - now.weekday), 23, 59, 59);
-
+    
     final List<int> results = await Future.wait([
-      isar.tasks.filter().dueDateTimeBetween(startOfDay, endOfDay).count(),
-      isar.tasks.filter().dueDateTimeBetween(startOfDay, endOfDay).isDoneEqualTo(true).count(),
-      isar.tasks.filter().dueDateTimeBetween(startOfWeek, endOfWeek).count(),
-      isar.tasks.filter().dueDateTimeBetween(startOfWeek, endOfWeek).isDoneEqualTo(true).count(),
+      managers.tasks.filter((t) => t.dueDateTime.isBetween(startOfDay, endOfDay)).count(),
+      managers.tasks.filter((t) => t.dueDateTime.isBetween(startOfDay, endOfDay) & t.isDone.equals(true)).count(),
+      managers.tasks.filter((t) => t.dueDateTime.isBetween(startOfWeek, endOfWeek)).count(),
+      managers.tasks.filter((t) => t.dueDateTime.isBetween(startOfWeek, endOfWeek) & t.isDone.equals(true)).count(),
     ]);
 
     final int dayTotal = results[0];
@@ -109,32 +118,273 @@ class DatabaseService {
   }
 
   Future<bool> clearTask(int id) async {
-    late bool success;
-    await isar.writeTxn(() async {
-      success = await isar.tasks.delete(id);
-    });
-    return success;
+    return await managers.tasks.filter((t) => t.id.equals(id)).delete() > 0;
+  }
+
+  Future<Habit?> getHabit(int id) {
+    return managers.habits.filter((h) => h.id.equals(id)).getSingleOrNull();
+  }
+
+  Future<void> insertOrUpdateHabit(HabitsCompanion habit) async {
+    final bool isUpdate = habit.id.present
+      ? await managers.habits.filter((h) => h.id.equals(habit.id.value)).exists()
+      : false;
+
+    if (isUpdate) {
+      await managers.habits.filter((h) => h.id.equals(habit.id.value)).update((_) => habit);
+    } else {
+      await managers.habits.create((_) => habit);
+    }
+  }
+
+  Future<void> incrementHabitCounter(Habit habit, bool isIncrement) async {
+    final Habit? habitToUpdate = await getHabit(habit.id);
+
+    if (habitToUpdate == null) return;
+
+    if (isIncrement) {
+      if (habitToUpdate.isGood) {
+        await updatePlayer(
+          credits: rewards[RewardType.credits]?.goodHabit,
+          xp: rewards[RewardType.xp]?.goodHabit,
+        );
+      } else {
+        await updatePlayer(hp: rewards[RewardType.hp]?.badHabit);
+      }
+    }
+
+    await managers.habits.filter((h) => h.id.equals(habit.id)).update(
+      (h) => h(
+        counter: Value(habit.counter),
+        lastDateTime: isIncrement ? Value(habit.lastDateTime) : const Value.absent(),
+      ),
+    );
   }
 
   Future<bool> clearHabit(int id) async {
-    late bool success;
-    await isar.writeTxn(() async {
-      success = await isar.habits.delete(id);
-    });
-    return success;
+    return await managers.habits.filter((h) => h.id.equals(id)).delete() > 0;
+  }
+
+  Future<List<Habit>> getHabits() {
+    return managers.habits.orderBy((h) => h.isGood.desc()).get();
+  }
+
+  Future<List<Routine>> getRoutines(bool isDone) {
+    final query = managers.routines.filter((r) => r.isDone.equals(isDone));
+    
+    return !isDone
+      ? query.get()
+      : query.orderBy((r) => r.dueDateTime.desc()).get();
+  }
+
+  Future<Routine?> getRoutine(int id) {
+    return managers.routines.filter((t) => t.id.equals(id)).getSingleOrNull();
+  }
+
+  Future<void> insertOrUpdateRoutine(RoutinesCompanion routine) async {
+    final Routine? routineToUpdate = routine.id.present
+      ? await getRoutine(routine.id.value)
+      : null;
+
+    final RoutinesCompanion routinesCompanion;
+    if (routineToUpdate != null) {
+      final DateTime? lastDueDateTime = routineToUpdate.lastDueDateTime;
+      final bool razLastDueDateTime = lastDueDateTime != null && (lastDueDateTime.isAfter(routine.dueDateTime.value) || lastDueDateTime.isAtSameMomentAs(routine.dueDateTime.value));
+
+      routinesCompanion = RoutinesCompanion(
+        title: routine.title,
+        description: routine.description,
+        frequency: routine.frequency,
+        period: routine.period,
+        days: routine.days,
+        dueDateTime: routine.dueDateTime,
+        isDone: routine.isDone,
+        lastDueDateTime: razLastDueDateTime ? const Value(null) : const Value.absent(),
+      );
+
+      await managers.routines
+        .filter((r) => r.id.equals(routineToUpdate.id))
+        .update((_) => routinesCompanion);
+    } else {
+      await managers.routines.create((_) => routine);
+    }
+  }
+
+  Future<void> completeRoutine(Routine routine) async {
+    final Routine? routineToUpdate = await getRoutine(routine.id);
+
+    if (routineToUpdate == null) return;
+
+    if (!routineToUpdate.isDone) {
+      if (DateTime.now().isBefore(routineToUpdate.dueDateTime)) {
+        await updatePlayer(
+          credits: rewards[RewardType.credits]?.onTimeRoutine,
+          xp: rewards[RewardType.xp]?.onTimeRoutine,
+        );
+      } else {
+        await updatePlayer(hp: rewards[RewardType.hp]?.lateRoutine);
+      }
+    }
+
+    await managers.routines.filter((r) => r.id.equals(routine.id)).update((r) =>
+      r(
+        lastDueDateTime: Value(routineToUpdate.dueDateTime),
+        dueDateTime: Value(routine.dueDateTime),
+      ),
+    );
   }
 
   Future<bool> clearRoutine(int id) async {
-    late bool success;
-    await isar.writeTxn(() async {
-      success = await isar.routines.delete(id);
+    return await managers.routines.filter((r) => r.id.equals(id)).delete() > 0;
+  }
+
+  Stream<Player> watchPlayer() {
+    return managers.players.filter((p) => p.id.equals(1)).watchSingleOrNull().map((player) {
+      if (player == null) {
+        throw Exception();
+      }
+      return player;
     });
-    return success;
+  }
+
+  Future<void> updatePlayer({int? hp, int? xp, int? credits}) async {
+    if (hp == null && xp == null && credits == null) return;
+    
+    final Player player = await managers.players.filter((p) => p.id.equals(1)).getSingleOrNull()
+      ?? await managers.players.createReturning((p) => p(id: const Value(1)));
+
+    int playerHp = player.hp;
+    int playerXp = player.xp;
+    int playerCredits = player.credits;
+    int playerLevel = player.level;
+  
+    if (hp != null) {
+      playerHp += hp;
+
+      if (playerHp <= 0) {
+        playerHp = Functions.getMaxHp(playerLevel);
+        playerCredits -= 30;
+        playerXp = 0;
+      }
+    }
+
+    if (xp != null) {
+      playerXp += xp;
+
+      final int targetXp = Functions.getTargetXp(playerLevel);
+      if (playerXp >= targetXp) {
+        playerHp = Functions.getMaxHp(playerLevel);
+        playerCredits += 20;
+        playerLevel++;
+        playerXp = 0;
+      }
+    }
+
+    if (credits != null) playerCredits += credits;
+
+    await managers.players.filter((p) => p.id.equals(1)).update((_) => player.copyWith(
+      hp: playerHp,
+      xp: playerXp,
+      credits: playerCredits,
+      level: playerLevel,
+    ));
+  }
+
+  Future<Report> getReport() async {
+    final DateTime now = DateTime.now();
+    final DateTime startOfDay = DateTime(now.year, now.month, now.day);
+    final DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+    final List<List<Object>> results = await Future.wait([
+      managers.tasks.filter((t) => t.dueDateTime.isBetween(startOfDay, endOfDay)).get(),
+      managers.routines.filter((r) => r.dueDateTime.isBetween(startOfDay, endOfDay)).get(),
+      managers.routines.filter((r) => r.lastDueDateTime.not.isNull() & r.lastDueDateTime.isBetween(startOfDay, endOfDay)).get(),
+    ]);
+
+    final List<Task> tasks = results[0] as List<Task>;
+    final List<Routine> undoneRoutines = results[1] as List<Routine>;
+    final List<Routine> doneRoutines = results[2] as List<Routine>;
+
+    final List<Quest> dailyQuests = [
+      ...tasks.map((task) => Quest(task.title, task.isDone)),
+      ...undoneRoutines.map((routine) => Quest(routine.title, false)),
+      ...doneRoutines.map((routine) => Quest(routine.title, true)),
+    ];
+    return Report(
+      dailyQuests: dailyQuests,
+      isPenalty: await getIsPenalty(startOfDay),
+    );
+  }
+
+  Future<bool> getIsPenalty(DateTime startOfDay) async {
+    final List<bool> results = await Future.wait([
+      managers.tasks.filter((t) => t.isDone.equals(false) & t.dueDateTime.isBefore(startOfDay)).exists(),
+      managers.routines.filter((r) => r.dueDateTime.isBefore(startOfDay)).exists(),
+    ]);
+    return results.any((element) => element);
   }
 
   Future<void> clearDatabase() async {
-    await isar.writeTxn(() async {
-      await isar.clear();
+    await batch((b) {
+      b.deleteAll(tasks);
+      b.deleteAll(habits);
+      b.deleteAll(routines);
     });
+  }
+
+  Future<String> importData(String path) async {
+    try {
+      final File file = File(path);
+      if (!await file.exists()) return CText.errorBackupNotFound;
+
+      final String raw = await file.readAsString();
+      final Map<String, dynamic> jsonData = jsonDecode(raw);
+
+      final Player playerRow = Player.fromJson(jsonData['player']);
+      final List<Task> taskRows = (jsonData['tasks'] as List).map((t) => Task.fromJson(t)).toList();
+      final List<Habit> habitRows = (jsonData['habits'] as List).map((h) => Habit.fromJson(h)).toList();
+      final List<Routine> routineRows = (jsonData['routines'] as List).map((r) {
+        final Map<String, dynamic> map = Map<String, dynamic>.from(r as Map);
+        map['days'] = (map['days'] as List).cast<int>();
+        return Routine.fromJson(map);
+      }).toList();
+      final String note = jsonData['note'].toString();
+
+      await clearDatabase();
+
+      await batch((b) {
+        b.update(players, playerRow, where: (p) => p.id.equals(1));
+        b.insertAll(tasks, taskRows);
+        b.insertAll(habits, habitRows);
+        b.insertAll(routines, routineRows);
+      });
+      await _settings.setNoteContent(note);
+      return CText.textSuccessImport;
+    } catch (e) {
+      return CText.errorImport;
+    }
+  }
+
+  Future<String> exportData(String path) async {
+    try {
+      final File file = File('$path/skuld_backup_${Functions.getBackupDate()}.json');
+
+      final Player player = await managers.players.filter((f) => f.id.equals(1)).getSingle();
+      final List<Task> tasks = await managers.tasks.get();
+      final List<Habit> habits = await managers.habits.get();
+      final List<Routine> routines = await managers.routines.get();
+
+      final Map<String, dynamic> data = {
+        'player': player.toJson(),
+        'tasks': tasks.map((t) => t.toJson()).toList(),
+        'habits': habits.map((h) => h.toJson()).toList(),
+        'routines': routines.map((r) => r.toJson()).toList(),
+        'note': _settings.getNoteContent(),
+      };
+      await file.writeAsString(jsonEncode(data));
+      return CText.textSuccessExport;
+    } catch (e) {
+      return CText.errorExport;
+    }
   }
 }

@@ -1,15 +1,16 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:skuld/models/habit.dart';
-import 'package:skuld/models/quest.dart';
-import 'package:skuld/models/routine.dart';
-import 'package:skuld/models/task.dart';
 import 'package:skuld/database/database_service.dart';
-import 'package:skuld/provider/quest_provider.dart';
+import 'package:skuld/models/db/habit.dart';
+import 'package:skuld/models/db/routine.dart';
+import 'package:skuld/models/db/task.dart';
+import 'package:skuld/models/quest.dart';
+import 'package:skuld/providers/quest_provider.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/utils/rules.dart';
-import 'package:skuld/widgets/alerts.dart';
+import 'package:skuld/widgets/overlays.dart';
 import 'package:skuld/widgets/form_components.dart';
 
 class FormPage extends StatefulWidget {
@@ -81,8 +82,6 @@ class _FormPageState extends State<FormPage> {
         return Functions.tryCast<Habit>(quest);
       case QuestType.routine:
         return Functions.tryCast<Routine>(quest);
-      default:
-        return null;
     }
   }
 
@@ -126,7 +125,7 @@ class _FormPageState extends State<FormPage> {
       appBar: AppBar(
         title: Text(CText.textTitleForm(_isEditMode, _questType), style: Theme.of(context).textTheme.titleLarge),
         actions: _isEditMode ? [
-          IconButton(onPressed: () => Alerts.deletionDialog(context, _deleteQuest), icon: const Icon(Icons.delete_rounded)),
+          IconButton(onPressed: () => Dialogs.deletionDialog(context, _deleteQuest), icon: const Icon(Icons.delete_rounded)),
         ] : null,
       ),
       body: Padding(
@@ -187,17 +186,17 @@ class _FormPageState extends State<FormPage> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-      final DateTime? dueDate = await showDatePicker(
-        context: context,
-        initialDate: _dateController,
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100),
-      );
+    final DateTime? dueDate = await showDatePicker(
+      context: context,
+      initialDate: _dateController,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
 
-      if (dueDate != null && dueDate != _dateController) {
-        setState(() => _dateController = dueDate);
-      }
+    if (dueDate != null && dueDate != _dateController) {
+      setState(() => _dateController = dueDate);
     }
+  }
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? dueTime = await showTimePicker(
@@ -238,65 +237,65 @@ class _FormPageState extends State<FormPage> {
   Future<void> _addTask() async {
     final DateTime dueDateTime = DateTime(_dateController.year, _dateController.month, _dateController.day, _timeController.hour, _timeController.minute);
 
-    await _db.insertOrUpdateTask(Task(
-      _titleController.text,
-      _descriptionController.text,
-      dueDateTime,
-      _priorityController,
+    await _db.insertOrUpdateTask(TasksCompanion(
+      title: Value(_titleController.text),
+      description: Value(_descriptionController.text),
+      dueDateTime: Value(dueDateTime),
+      priority: Value(_priorityController),
     ));
   }
 
   Future<void> _updateTask() async {
     final DateTime dueDateTime = DateTime(_dateController.year, _dateController.month, _dateController.day, _timeController.hour, _timeController.minute);
-             
-    _quest.title = _titleController.text;
-    _quest.description = _descriptionController.text;
-    _quest.dueDateTime = dueDateTime;
-    _quest.priority = _priorityController;
     
-    await _db.insertOrUpdateTask(_quest);
+    await _db.insertOrUpdateTask((_quest as Task).toCompanion(true).copyWith(
+      title: Value(_titleController.text),
+      description: Value(_descriptionController.text),
+      dueDateTime: Value(dueDateTime),
+      priority: Value(_priorityController),
+    ));
   }
 
   Future<void> _addHabit() async {
-    await _db.insertOrUpdateHabit(Habit(
-      _titleController.text,
-      _descriptionController.text,
-      _isGoodController,
+    await _db.insertOrUpdateHabit(HabitsCompanion(
+      title: Value(_titleController.text),
+      description: Value(_descriptionController.text),
+      isGood: Value(_isGoodController),
     ));
   }
 
   Future<void> _updateHabit() async {
-    _quest.title = _titleController.text;
-    _quest.description = _descriptionController.text;
-    _quest.isGood = _isGoodController;
-
-    await _db.insertOrUpdateHabit(_quest);
+    await _db.insertOrUpdateHabit((_quest as Habit).toCompanion(true).copyWith(
+      title: Value(_titleController.text),
+      description: Value(_descriptionController.text),
+      isGood: Value(_isGoodController),
+    ));
   }
 
   Future<void> _addRoutine() async {
     final DateTime dueDateTime = DateTime(_dateController.year, _dateController.month, _dateController.day, _timeController.hour, _timeController.minute);
 
-    await _db.insertOrUpdateRoutine(Routine(
-      _titleController.text,
-      _descriptionController.text,
-      int.tryParse(_frequencyController.text) ?? 1,
-      _periodController,
-      _daysController,
-      dueDateTime,
+    await _db.insertOrUpdateRoutine(RoutinesCompanion(
+      title: Value(_titleController.text),
+      description: Value(_descriptionController.text),
+      frequency: Value(int.tryParse(_frequencyController.text) ?? 1),
+      period: Value(_periodController),
+      days: Value(_daysController),
+      dueDateTime: Value(dueDateTime),
     ));
   }
 
   Future<void> _updateRoutine() async {
     final DateTime dueDateTime = DateTime(_dateController.year, _dateController.month, _dateController.day, _timeController.hour, _timeController.minute);
-             
-    _quest.title = _titleController.text;
-    _quest.description = _descriptionController.text;
-    _quest.frequency = int.tryParse(_frequencyController.text) ?? 1;
-    _quest.period = _periodController;
-    _quest.days = _daysController;
-    _quest.dueDateTime = dueDateTime;
-    
-    await _db.insertOrUpdateRoutine(_quest);
+                 
+    await _db.insertOrUpdateRoutine((_quest as Routine).toCompanion(true).copyWith(
+      title: Value(_titleController.text),
+      description: Value(_descriptionController.text),
+      frequency: Value(int.tryParse(_frequencyController.text) ?? 1),
+      period: Value(_periodController),
+      days: Value(_daysController),
+      dueDateTime: Value(dueDateTime),
+    ));
   }
 
   Future<void> _endRoutine() async {

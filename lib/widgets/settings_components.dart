@@ -12,10 +12,11 @@ class TileDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-      title: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-      subtitle: Text(description, style: Theme.of(context).textTheme.bodySmall),
+      title: Text(label, style: themeData.textTheme.bodyLarge),
+      subtitle: Text(description, style: themeData.textTheme.bodySmall),
       trailing: IntrinsicWidth(
         child: DropdownButtonFormField<String>(
           value: value,
@@ -24,7 +25,7 @@ class TileDropdown extends StatelessWidget {
           items: options.entries.map((entry) {
             return DropdownMenuItem<String>(
               value: entry.key,
-              child: Text(entry.value, style: Theme.of(context).textTheme.labelLarge),
+              child: Text(entry.value, style: themeData.textTheme.labelLarge),
             );
           }).toList(),
         ),
@@ -43,10 +44,11 @@ class TileIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-      title: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-      subtitle: Text(description, style: Theme.of(context).textTheme.bodySmall),
+      title: Text(label, style: themeData.textTheme.bodyLarge),
+      subtitle: Text(description, style: themeData.textTheme.bodySmall),
       trailing: IconButton(
         onPressed: onPressed,
         icon: Icon(icon),
@@ -64,11 +66,35 @@ class TileButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
     return ListTile(
       onTap: onPressed,
       leading: Icon(icon),
+      title: Text(label, style: themeData.textTheme.bodyLarge),
+      trailing: Icon(Icons.arrow_forward_ios_rounded, color: themeData.hintColor),
+    );
+  }
+}
+
+class TileToggle extends StatelessWidget {
+  final String label;
+  final String description;
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  const TileToggle({super.key, required this.label, required this.description, required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
       title: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-      trailing: Icon(Icons.arrow_forward_ios_rounded, color: Theme.of(context).hintColor),
+      subtitle: Text(description, style: Theme.of(context).textTheme.bodySmall),
+      trailing: Switch(
+        value: value,
+        onChanged: onChanged,
+      ),
     );
   }
 }

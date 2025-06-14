@@ -1,15 +1,13 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:skuld/database/database_service.dart';
-import 'package:skuld/models/habit.dart';
 import 'package:skuld/models/quest.dart';
-import 'package:skuld/models/routine.dart';
-import 'package:skuld/models/task.dart';
 import 'package:skuld/utils/functions.dart';
 
 class QuestProvider with ChangeNotifier {
   final DatabaseService _db = DatabaseService();
 
-  int _currentScreenIndex = 0;
+  int _currentScreenIndex = 1;
   int get currentScreenIndex => _currentScreenIndex;
 
   void updateScreenIndex(int index) {
@@ -32,6 +30,7 @@ class QuestProvider with ChangeNotifier {
         await fetchRoutines();
         break;
     }
+    await fetchReport();
   }
 
   // Tasks
@@ -49,8 +48,9 @@ class QuestProvider with ChangeNotifier {
 
   Future<void> completeTask(Task task, bool? value) async {
     final bool state = value ?? task.isDone;
-    await _db.completeTask(task.id, state);
     task.isDone = state;
+    task.isReclaimed = true;
+    await _db.completeTask(task);
     if (state) {
       _tasks.remove(task);
       _doneTasks.add(task);
@@ -59,6 +59,7 @@ class QuestProvider with ChangeNotifier {
       _tasks.add(task);
     }
     await fetchDoneRates();
+    await fetchReport();
   }
 
   List<int> _doneRates = [0, 0];
@@ -79,13 +80,12 @@ class QuestProvider with ChangeNotifier {
   }
 
   Future<void> incrementHabitCounter(Habit habit, int increment) async {
-    habit.counter += increment;
-    if (increment > 0) {
-      DateTime now = DateTime.now();
-      habit.lastDateTime = now;
+    if (habit.counter + increment >= 0 && increment != 0) {
+      habit.counter += increment;
+      habit.lastDateTime = DateTime.now();
+      await _db.incrementHabitCounter(habit, increment > 0);
+      notifyListeners();
     }
-    await _db.insertOrUpdateHabit(habit);
-    notifyListeners();
   }
 
   // Routines
@@ -103,16 +103,17 @@ class QuestProvider with ChangeNotifier {
 
   Future<void> completeRoutine(Routine routine) async {
     routine.dueDateTime = Functions.getNextDate(routine.dueDateTime, routine.frequency, routine.period, routine.days);
-    Future.delayed(const Duration(milliseconds: 500), () async {
+    await Future.delayed(const Duration(milliseconds: 500), () async {
       routine.isDone = false;
-      await _db.insertOrUpdateRoutine(routine);
+      await _db.completeRoutine(routine);
       notifyListeners();
-    });
+    }).whenComplete(() => fetchReport());
   }
 
   Future<void> endRoutine(Routine routine) async {
-    routine.isDone = !routine.isDone;
-    await _db.insertOrUpdateRoutine(routine);
+    final bool isDone = !routine.isDone;
+    routine.isDone = isDone;
+    await _db.insertOrUpdateRoutine(routine.toCompanion(true).copyWith(isDone: Value(isDone)));
     if (routine.isDone) {
       _routines.remove(routine);
       _doneRoutines.add(routine);
@@ -120,6 +121,15 @@ class QuestProvider with ChangeNotifier {
       _doneRoutines.remove(routine);
       _routines.add(routine);
     }
+    notifyListeners();
+  }
+
+  // Report
+  Report _report = Report(dailyQuests: [], isPenalty: false);
+  Report get report => _report;
+
+  Future<void> fetchReport() async {
+    _report = await _db.getReport();
     notifyListeners();
   }
 }

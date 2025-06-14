@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:skuld/models/task.dart';
+import 'package:skuld/database/database_service.dart';
+import 'package:skuld/models/db/task.dart';
 import 'package:skuld/utils/functions.dart';
 import 'package:skuld/utils/styles.dart';
 
@@ -7,13 +8,15 @@ class TaskCard extends StatelessWidget {
   final Task task;
   final void Function()? onTap;
   final void Function(bool?)? onCheck;
+  final GlobalKey? animationOriginKey;
 
-  const TaskCard({super.key, required this.task, required this.onTap, required this.onCheck});
+  const TaskCard({super.key, required this.task, required this.onTap, required this.onCheck, this.animationOriginKey});
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
     final bool dueDateExpired = task.dueDateTime.isBefore(DateTime.now());
-    final Color dateTimeColor = (dueDateExpired && !task.isDone) ? Theme.of(context).colorScheme.error : Colors.black;
+    final Color dateTimeColor = (dueDateExpired && !task.isDone) ? themeData.colorScheme.error : Colors.black;
 
     return GestureDetector(
       onTap: onTap,
@@ -32,6 +35,7 @@ class TaskCard extends StatelessWidget {
               ),
             ),
             Checkbox(
+              key: animationOriginKey,
               value: task.isDone,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
               onChanged: onCheck,
@@ -44,7 +48,7 @@ class TaskCard extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 2),
-                      child: Text(task.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge!.copyWith(decoration: task.isDone ? TextDecoration.lineThrough : TextDecoration.none)),
+                      child: Text(task.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: themeData.textTheme.bodyLarge!.copyWith(decoration: task.isDone ? TextDecoration.lineThrough : TextDecoration.none)),
                     ),
                     Wrap(
                       alignment: WrapAlignment.start,
@@ -52,9 +56,9 @@ class TaskCard extends StatelessWidget {
                       spacing: 5,
                       children: [
                         Icon(Icons.access_time_rounded, size: 15, color: dateTimeColor),
-                        Text(Functions.getTime(task.dueDateTime), style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
+                        Text(Functions.getTime(task.dueDateTime), style: themeData.textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
                         Icon(Icons.calendar_today_rounded, size: 15, color: dateTimeColor),
-                        Text(Functions.getDate(task.dueDateTime), style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
+                        Text(Functions.getDate(task.dueDateTime), style: themeData.textTheme.bodyMedium!.copyWith(color: dateTimeColor)),
                       ],
                     ),
                   ],

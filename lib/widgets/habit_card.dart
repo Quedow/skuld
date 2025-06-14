@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:skuld/models/habit.dart';
+import 'package:skuld/database/database_service.dart';
+import 'package:skuld/models/db/habit.dart';
 import 'package:skuld/utils/common_text.dart';
 import 'package:skuld/utils/styles.dart';
 
@@ -7,13 +8,14 @@ class HabitCard extends StatelessWidget {
   final Habit habit;
   final void Function()? onTap;
   final void Function()? onIncrement;
-  final void Function()? onDecrement;
+  final GlobalKey? animationOriginKey;
   
-  const HabitCard({super.key, required this.habit, required this.onTap, required this.onIncrement, required this.onDecrement});
+  const HabitCard({super.key, required this.habit, required this.onTap, required this.onIncrement, this.animationOriginKey});
 
   @override
   Widget build(BuildContext context) {
-    final Color counterColor = !habit.isGood && habit.counter > 0 ? Theme.of(context).colorScheme.error : Colors.black;
+    final ThemeData themeData = Theme.of(context);
+    final Color counterColor = !habit.isGood && habit.counter > 0 ? themeData.colorScheme.error : Colors.black;
 
     return GestureDetector(
       onTap: onTap,
@@ -42,19 +44,16 @@ class HabitCard extends StatelessWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(bottom: 2),
-                        child: Text(habit.title, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge),
+                        child: Text(habit.title, overflow: TextOverflow.ellipsis, style: themeData.textTheme.bodyLarge),
                       ),
-                      Text(CText.textLastTime(habit.lastDateTime), style: Theme.of(context).textTheme.bodyMedium),
+                      Text(CText.textLastTime(habit.lastDateTime), style: themeData.textTheme.bodyMedium),
                     ],
                   ),
                 ),
               ),
+              Text(habit.counter.toString(), style: themeData.textTheme.bodyLarge!.copyWith(color: counterColor)),
               IconButton(
-                onPressed: onDecrement,
-                icon: const Icon(Icons.remove_rounded),
-              ),
-              Text(habit.counter.toString(), style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: counterColor)),
-              IconButton(
+                key: animationOriginKey,
                 onPressed: onIncrement,
                 icon: const Icon(Icons.add_rounded),
               ),

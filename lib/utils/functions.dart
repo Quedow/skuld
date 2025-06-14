@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 
@@ -8,6 +10,18 @@ abstract class Functions {
 
   static String getTime(DateTime date) {
     return DateFormat('HH:mm').format(date);
+  }
+
+  static String getBackupDate() {
+    return DateFormat('dd-MM-yyyy_HH-mm-ss').format(DateTime.now());
+  }
+
+  static int getMaxHp(int level) {
+    return 100 + level * 20;
+  }
+
+  static int getTargetXp(int level) {
+    return level == 0 ? 50 : level * 100;
   }
 
   static T? tryCast<T>(dynamic x) => x is T ? x : null;
@@ -42,5 +56,11 @@ abstract class Functions {
         break;
     }
     return nextDate ?? date;
+  }
+
+
+  static double getRandomDouble(double min, double max) {
+    final random = Random();
+    return min + (random.nextDouble() * (max - min));
   }
 }
