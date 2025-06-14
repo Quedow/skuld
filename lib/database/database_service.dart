@@ -47,9 +47,9 @@ class DatabaseService extends _$DatabaseService {
   Future<List<Task>> getTasks(bool isDone) {
     final query = managers.tasks.filter((t) => t.isDone.equals(isDone));
 
-    return !isDone
+    return isDone
       ? query.get()
-      : query.orderBy((t) => t.dueDateTime.desc()).get();
+      : query.orderBy((t) => t.dueDateTime.asc()).get();
   }
 
   Future<void> insertOrUpdateTask(TasksCompanion task) async {
